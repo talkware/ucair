@@ -6,6 +6,8 @@ If you have not installed Visual C++, you may need to download [http://www.micro
 
 After you click on run.bat, you can open a browser window (FF 3 suggested, IE8 may work, other browsers are not supported) and type http://localhost:8080/search
 
+The server only listens to internal traffic (outside hosts cannot connect), so it should not pose a security risk.
+
 In IE, you may get an information bar saying "Intranet settings are now turned off by default". You can safely select "do not show this again". For details, check [http://www.vexentricity.com/?p=61 here].
 
 If you don't see anything, try to run run.bat in DOS window to see if there is any error message, and check your firewall settings.
