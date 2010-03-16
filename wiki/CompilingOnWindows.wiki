@@ -2,11 +2,11 @@
 
 = Installing Visual C++
 
-For the free Express version, you can download it from http://www.microsoft.com/express/Windows/
+For the free Express version, you can download it from [http://www.microsoft.com/express/Windows/ here]
 
 = Installing boost =
 
-Download the boost installer from http://www.boostpro.com/download
+Download the boost installer from [http://www.boostpro.com/download]
 Compilers: the correct VC version
 Variants: at least Multithread and Multithread Debug
 Components: at least DateTime, Filesystem, ProgramOptions, Regex, Signals, Thread
