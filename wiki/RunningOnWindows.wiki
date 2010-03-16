@@ -1,0 +1,17 @@
+#summary Running the binary on Windows.
+
+= Introduction =
+
+If you have not installed Visual C++, you may need to download [http://www.microsoft.com/downloads/details.aspx?FamilyID=9b2da534-3e03-4391-8a4d-074b9f2bc1bf&displaylang=en VC runtime]. Note there is an x86 and x64 version.
+
+After you click on run.bat, you can open a browser window (FF 3 suggested, IE8 may work, other browsers are not supported) and type http://localhost:8080/search
+
+If you don't see anything, try to run run.bat in DOS window to see if there is any error message, and check your firewall settings.
+
+You may change config.ini for settings such as port number.
+
+To close just shut down the DOS window.
+
+= TODO =
+
+I need to make an installer and make it into a background process.
