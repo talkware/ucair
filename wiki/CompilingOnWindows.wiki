@@ -2,22 +2,50 @@
 
 = Installing Visual C++
 
-For the free Express version, you can download it from [http://www.microsoft.com/express/Windows/ here]
+For the free Express version, you can download it from http://www.microsoft.com/express/Windows/
 
 = Installing boost =
 
-Download the boost installer from [http://www.boostpro.com/download]
+Download the boost installer from http://www.boostpro.com/download
+
 Compilers: the correct VC version
+
 Variants: at least Multithread and Multithread Debug
+
 Components: at least DateTime, Filesystem, ProgramOptions, Regex, Signals, Thread
+
 Destination folder: I'm using C:\Program Files\boost\boost_1_42 for example.
 
 = Installing sqlite3 =
 
+Download the src from 
+http://www.sqlite.org/download.html
 
-= Details =
+I've created a VC solution [http://ucair.googlecode.com/files/sqlite3_vc_sln.zip here].
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+Copy sqlite3.h to C:\Program Files\sqlite3\include
+
+Build under Debug, and copy the lib file to C:\Program Files\sqlite3\lib\sqlite3d.lib
+
+Build under Release, and copy the lib file to C:\Program Files\sqlite3\lib\sqlite3.lib
+
+= Installing MXML =
+
+Download the src from
+http://www.minixml.org/software.php
+
+I've created a VC solution [http://ucair.googlecode.com/files/mxml_vc_sln.zip here].
+
+Copy config.h and mxml.h to C:\Program Files\MXML\include
+
+Build under Debug, and copy the lib file to C:\Program Files\MXML\lib\mxmld.lib
+
+Build under Release, and copy the lib file to C:\Program Files\MXML\lib\mxml.lib
+
+= Compiling UCAIR =
+
+Download the src from the download page.
+
+Go to Project Properties, adjust C/C++ | General | Additional Include Directories, Linker | General | Additional Library Directories.
+
+Build the project and run. You can then type http://localhost/search in your browser (FF3 or IE8)
