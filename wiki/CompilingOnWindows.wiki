@@ -49,3 +49,5 @@ Download the src from the download page.
 Go to Project Properties, adjust C/C++ | General | Additional Include Directories, Linker | General | Additional Library Directories.
 
 Build the project and run. You can then type http://localhost:8080/search in your browser (FF3 or IE8)
+
+If program takes a long time to start in debug mode, you can change config.ini to use col_stats_small, which loads faster.
