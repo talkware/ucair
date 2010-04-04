@@ -1,6 +1,6 @@
 #summary Compiling on Windows
 
-= Installing Visual C++
+= Installing Visual C++ =
 
 For the free Express version, you can download it from http://www.microsoft.com/express/Windows/
 
