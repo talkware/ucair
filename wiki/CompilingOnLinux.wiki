@@ -1,31 +1,27 @@
 #summary Compiling on Linux
 
-= Introduction =
+= Installing boost =
 
-Boost has linux version, and MXML SQLite3 are platform independent, so it's very easy to compile on Linux.
+Download the src from http://www.boost.org/
 
-Here's a sample Makefile from an outdated version of UCAIR:
+Installation instructions can be found [http://www.boost.org/doc/libs/1_42_0/more/getting_started/unix-variants.html#easy-build-and-install here]
 
-{{{
-CXX = g++
+= Installing sqlite3 =
 
-CXXFLAGS = -I/usr/local/include -I/mounts/karp/disks/1/shared-data/local/boost-1.38/include/boost-1_38 -O3 -Wall
+Download the src from 
+http://www.sqlite.org/download.html
 
-LDFLAGS = -L/usr/local/lib -L/mounts/karp/disks/1/shared-data/local/boost-1.38/lib -lboost_thread-gcc34-mt -lboost_system-gcc34-mt -lboost_program_options-gcc34-mt -lboost_regex-gcc34-mt -lboost_filesystem-gcc34-mt -lboost_signals-gcc34-mt -lmxml -lsqlite3
+configure, make, make install, nothing special
 
-VPATH = src:src/http:src/xml:src/indexing:src/sqlite
+= Installing MXML =
 
-OBJS = adaptive_search_ui.o agglomerative_clustering.o all_components.o aol_wrapper.o basic_search_ui.o common_util.o component.o connection.o connection_manager.o delayed_signal.o doc_stream_manager.o document.o exe_main.o http_download.o index_manager.o index_util.o log_importer.o logger.o long_term_history_manager.o long_term_search_model.o main.o mixture.o page_module.o porter.o properties.o prototype.o reply.o request.o request_parser.o reranking_list_view.o result_list_view.o search_engine.o search_history_ui.o search_menu.o search_model.o search_model_widget.o search_proxy.o search_topics.o search_topics_ui.o server.o session_widget.o simple_index.o sqlitepp.o static_file_handler.o template_engine.o template_engine_wrapper.o test_main.o ucair_server.o ucair_util.o url_components.o url_encoding.o user.o user_manager.o value_map.o xml_dom.o xml_util.o yahoo_boss_api.o yahoo_search_api.o
+Download the src from
+http://www.minixml.org/software.php
 
-PROG = test
+configure, make, make install, nothing special
 
-$(PROG): $(OBJS)
-	$(CXX) -o $@ $^ $(LDFLAGS)
+= Building UCAIR =
 
-%.o: %.cpp
-	$(CXX) -o $@ -c $< $(CXXFLAGS)
+Makefile can be found in the UCAIR package.
 
-.PHONY: clean
-clean:
-	rm -f $(OBJS) $(PROG)
-}}}
+If you have problem with shared libraries when running the binary, check [http://www.eyrie.org/~eagle/notes/rpath.html this]
