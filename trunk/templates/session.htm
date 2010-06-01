@@ -1,0 +1,20 @@
+<template:main>
+<div class="widget" id="${widget_id}">
+	<div class="widget_head">
+		<span class="widget_title">${widget_name}</span>
+		<span class="show_hide_widget"><a href="/">Show</a></span>
+	</div>
+	<div class="widget_body">
+		<table id="session_searches">
+			<tbody>
+				<template:foreach name="session_search">
+					<tr>
+						<td class="session_search_time">${time}</td>
+						<td class="session_search_${related}"><a href="/search?sid=${search_id}&amp;view=${view_id}">${query}</a></td>
+					</tr>
+				</template:foreach>
+			</tbody>
+		</table>
+	</div>
+</div>
+</template:main>

@@ -1,0 +1,92 @@
+<template:main>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>UCAIR - Search Interest Topics</title>
+	<link rel="stylesheet" type="text/css" href="/static/main.css" />
+	<script type="text/javascript" src="/static/jquery.js"></script>
+	<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+	$("#sort_topics_by select").change(function() {
+		$(this).parents("form").submit();
+	});
+});
+//]]>
+	</script>
+</head>
+
+<body>
+
+	<div id="top_pane">
+
+		<form id="search_box" action="" method="get">
+			<img id="logo" src="/static/logo.png" alt="UCAIR Logo" />
+			<span id="top_user_id">User: ${user_id}</span>
+		</form>
+
+	</div>
+
+	<div id="center_pane">
+
+		<template:include source="search_menu.htm" />
+
+		<div id="left_pane">
+
+			<form action="/search_topics" method="post">
+				<p>
+					<input type="submit" name="update" value="Update topics" /> (may take a while)
+				</p>
+			</form>
+
+			<template:if name="topic" test="exist">
+				<form action="/search_topics" method="get" id="sort_topics_by">
+					Sort topics by
+					<select name="sort">
+						<template:foreach name="sort">
+							<template:switch name="selected">
+								<template:case value="true">
+									<option selected="selected">${criteria}</option>
+								</template:case>
+								<template:default>
+									<option>${criteria}</option>
+								</template:default>
+							</template:switch>
+						</template:foreach>
+					</select>
+				</form>
+			</template:if>
+
+			<div id="search_topics">
+				<template:if name="topic" test="nexist">
+					There are no significant topics.
+				</template:if>
+
+				<template:foreach name="topic">
+					<div class="search_topic">
+						<div class="title"><a href="/display_search_topic?topic_id=${topic_id}">Topic ${topic_id}</a></div>
+						<div class="language_model">
+							<template:foreach name="language_model_term_info">
+								<span class="language_model_term">${term}</span>
+							</template:foreach>
+						</div>
+						<div class="attrs">
+sessions: ${session_count}, queries: ${total_query_count} (unique: ${unique_query_count}), clicks: ${total_click_count} (unique: ${unique_click_count})
+						</div>
+					</div>
+				</template:foreach>
+			</div>
+			
+		</div>
+
+		<div id="right_pane">
+		</div>
+	</div>
+
+	<div id="bottom_pane">
+		<template:include source="footer.htm" />
+	</div>
+
+</body>
+</html>
+</template:main>

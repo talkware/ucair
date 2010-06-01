@@ -1,0 +1,35 @@
+<template:main>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<template:if name="query" test="empty">
+		<title>${search_engine_name}</title>
+	</template:if>
+	<template:if name="query" test="nempty">
+		<title>${search_engine_name} - ${query}</title>
+	</template:if>
+	<link rel="stylesheet" type="text/css" href="/static/main.css" />
+</head>
+<body style="overflow: hidden">
+	<div id="frame_top_menu">
+		<span id="frame_top_menu_left_side">
+			<span class="horizontal_link_item_inactive">
+				<a href="/search?sid=0&amp;query=${encoded_query}">UCAIR</a>
+			</span>
+			<template:foreach name="external_search_engine">
+				<span class="horizontal_link_item_${active}">
+					<a href="/external_search?query=${encoded_query}&amp;seng=${external_search_engine_id}">${external_search_engine_name}</a>
+				</span>
+			</template:foreach>
+		</span>
+		<span id="frame_top_menu_right_side">
+			<span id="remove_frame">
+				<a href="${external_search_page_link}">Remove frame</a>
+			</span>
+		</span>
+	</div>
+
+	<iframe id="external_search_page" name="external_search_page" scrolling="auto" frameborder="0" style="width: 100%; height: 100%;" allowtransparency="true" src="${external_search_page_link}" />
+</body>
+</html>
+</template:main>

@@ -1,0 +1,46 @@
+<template:main>
+<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+	$("select#search_model_widget_models").change(function() {
+		$(this).parents("form").submit();
+	});
+});
+//]]>
+</script>
+<div class="widget" id="${widget_id}">
+	<div class="widget_head">
+		<span class="widget_title">${widget_name}</span>
+		<span class="show_hide_widget"><a href="/">Show</a></span>
+	</div>
+	<div class="widget_body">
+		<form action="/search" method="get">
+			<input type="hidden" name="sid" value="${search_id}" />
+			<input type="hidden" name="view" value="${view_id}" />
+
+			<select id="search_model_widget_models" name="model">
+				<template:foreach name="model">	
+					<template:switch name="selected">
+						<template:case value="true">
+							<option selected="selected" value="${model_name}">${model_description}</option>
+						</template:case>
+						<template:default>
+							<option value="${model_name}">${model_description}</option>
+						</template:default>
+					</template:switch>
+				</template:foreach>
+			</select>
+		</form>
+		<table class="language_model">
+			<tbody>
+				<template:foreach name="language_model_term_info">
+					<tr>
+						<td class="language_model_term">${term}</td>
+						<td class="language_model_prob">${prob}</td>
+					</tr>
+				</template:foreach>
+			</tbody>
+		</table>
+	</div>
+</div>
+</template:main>

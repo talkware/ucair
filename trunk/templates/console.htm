@@ -1,0 +1,95 @@
+<template:main>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>UCAIR - Console</title>
+	<link rel="stylesheet" type="text/css" href="/static/main.css" />
+	<script type="text/javascript" src="/static/jquery.js"></script>
+	<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+	$("#addOpenSearch").click(function() {
+		window.external.AddSearchProvider("http://${address}/open_search");
+	});
+});
+//]]>
+	</script>
+</head>
+
+<body>
+
+	<div id="top_pane">
+
+		<form id="search_box" action="" method="get">
+			<img id="logo" src="/static/logo.png" alt="UCAIR Logo" />
+			<span id="top_user_id">User: ${user_id}</span>
+		</form>
+
+	</div>
+
+	<div id="center_pane">
+
+		<template:include source="search_menu.htm" />
+
+		<div id="left_pane">
+
+			<template:switch name="shutdown">
+				<template:case value="true">
+					<h3>Server is shutting down!</h3>
+				</template:case>
+				<template:case value="false">
+					<template:switch name="user_id">
+						<template:case value="">
+							<h3>Please log in first.</h3>	
+						</template:case>
+						<template:default>
+							<p>You are logged in as ${user_id}</p>
+						</template:default>
+					</template:switch>
+
+					<form action="/login" method="post">
+						<p>Create a new user:</p>
+						<input id="input_user_id" type="text" name="user" />
+						<input type="submit" value="Create" />
+					</form>
+
+					<form action="/login" method="post">
+						<p>Switch to an existing user:</p>
+						<select id="select_users" name="user">
+							<template:foreach name="user">
+								<template:switch name="active">
+									<template:case value="true">
+										<option value="${user_id}" selected="selected">${user_id}</option>
+									</template:case>
+									<template:case value="false">
+										<option value="${user_id}">${user_id}</option>
+									</template:case>
+								</template:switch>
+							</template:foreach>
+						</select>
+						<input type="submit" value="Switch" />
+					</form>
+
+					<p>
+					<button id="addOpenSearch">Add UCAIR to your search engine list</button>
+					</p>
+
+					<form action="console" method="post">
+						<p>
+							<input type="submit" name="shutdown" value="Shutdown UCAIR server" />
+						</p>
+					</form>
+				</template:case>
+			</template:switch>
+
+		<div id="right_pane">
+		</div>
+	</div>
+
+	<div id="bottom_pane">
+		<template:include source="footer.htm" />
+	</div>
+
+</body>
+</html>
+</template:main>

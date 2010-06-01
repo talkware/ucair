@@ -1,0 +1,101 @@
+<template:main>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<template:if name="query" test="empty">
+		<title>UCAIR</title>
+	</template:if>
+	<template:if name="query" test="nempty">
+		<title>UCAIR - ${query}</title>
+	</template:if>
+	<link rel="stylesheet" type="text/css" href="/static/main.css" />
+	<script type="text/javascript" src="/static/jquery.js"></script>
+	<script type="text/javascript">
+//<![CDATA[
+
+$(document).ready(function() {
+	$(".search_result_title > a").mousedown(function(){
+		$(this).attr('href', $(this).prev().text());	
+	});
+})
+
+//]]>
+	</script>
+</head>
+
+<body>
+
+	<div id="top_pane">
+
+		<form id="search_box" action="/history_search" method="get">
+			<img id="logo" src="/static/logo.png" alt="UCAIR Logo" />
+			<input id="query_input" type="text" name="query" value="${query}" size="50" />
+			<input type="hidden" name="start" value="1" />
+			<input type="submit" value="Search in history" />
+			<span id="top_user_id">User: ${user_id}</span>
+		</form>
+
+	</div>
+
+	<div id="center_pane">
+
+		<template:include source="search_menu.htm" />
+
+		<div id="left_pane">
+
+			<template:if name="query" test="nempty">
+				<p><a href="/history_search">All searches</a></p>
+			</template:if>
+
+			<table id="search_history">
+				<template:foreach name="search">
+					<template:if name="query" test="empty">
+						<template:if name="date" test="nempty">
+							<tr><td class="search_history_date" colspan="2">${date}</td></tr>
+						</template:if>
+					</template:if>
+					<tr>
+						<template:if name="query" test="empty">
+							<td class="search_history_time">${time}</td>
+						</template:if>
+						<td>
+							<div class="search_history_search">
+								<a href="/search?query=${encoded_search_query}&amp;seng=${search_engine_id}">${search_query}</a>
+								<template:if name="query" test="nempty">
+									<span class="search_history_time2">- ${date} ${time}</span>
+								</template:if>
+							</div>
+							<template:foreach name="result">
+							<div class="search_history_result">
+								<span class="search_history_result_title"><a href="${url}">${title}</a></span>
+								<span class="search_history_result_url">- ${display_url}</span>
+							</div>
+							</template:foreach>
+						</td>
+					</tr>
+				</template:foreach>
+			</table>
+
+			<template:if name="show_prev_next_page" test="eq" value="true">
+				<div id="prev_next_search_page">
+					<template:if name="prev_page_start_pos" test="nempty">
+						<a href="/history_search?sid=${search_id}&amp;query=${encoded_query}&amp;start=${prev_page_start_pos}">Prev</a>
+					</template:if>
+					<template:if name="next_page_start_pos" test="nempty">
+						<a href="/history_search?sid=${search_id}&amp;query=${encoded_query}&amp;start=${next_page_start_pos}">Next</a>
+					</template:if>
+				</div>
+			</template:if>
+		</div>
+
+		<div id="right_pane">
+		</div>
+	</div>
+
+	<div id="bottom_pane">
+		<template:include source="footer.htm" />
+	</div>
+
+</body>
+</html>
+</template:main>

@@ -1,0 +1,303 @@
+html, body{
+	font-family: arial, sans-serif;	
+}
+
+a:active{
+	color: #2200CC;
+}
+
+a:visited{
+	color: #551A8B;
+}
+
+span.horizontal_link_item_active{
+	margin-right: 5px;
+	font-weight: bold;
+}
+
+span.horizontal_link_item_inactive{
+	margin-right: 5px;
+}
+
+#top_user_id {
+	position: absolute;
+	right: 3px;
+}
+
+#error_message{
+	color: red;
+	font-size: large;
+}
+
+/***************************/
+
+#top_pane{
+	margin-bottom: 10px;
+}
+
+#center_pane{
+	margin-top: 10px;
+	margin-bottom: 10px;
+}
+
+#bottom_pane{
+	clear: both;
+	margin-top: 400px;
+	border-top: thin solid #6B90DA;
+}
+
+#bottom_pane #about {
+	position: relative;
+}
+
+#logos {
+	position: absolute;
+	right: 3px;
+}
+
+#logos img {
+	border-style: none;
+	height: 30px;
+	margin-left: 5px;
+	margin-right: 5px;
+}
+
+#left_pane{
+	/*border-right: thin solid silver;*/
+	margin-top: 10px;
+	margin-bottom: 10px;
+	padding-right: 10px;
+	float: left;
+	width: 60%;
+}
+
+#right_pane{
+	/*margin-top: 10px;
+	margin-bottom: 10px;
+	padding-left: 10px;*/
+	float: right;
+	width: 30%;
+}
+
+/***************************/
+
+.search_result{
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.search_result_summary{
+	font-size: smaller;
+}
+
+.search_result_meta{
+	font-size: smaller;
+}
+
+.search_result_display_url{
+	color: green;
+}
+
+.search_result_pos{
+	margin-left: 10px;
+	margin-right: 10px;
+	color: #7777CC;
+}
+
+.promoted_search_result{
+	border-left: thin dotted #C9D7F1;
+	padding-left: 10px;
+}
+
+/***************************/
+
+#search_history {
+	border-spacing: 10px 0px;
+}
+
+#search_history td {
+	vertical-align: top;
+	padding: 5px;
+}
+
+.search_history_time {
+	font-size: smaller;
+	color: #666666;
+	background-color: #E5ECF9;
+}
+
+.search_history_time2 {
+	font-size: smaller;
+	color: #666666;
+}
+
+.search_history_result {
+	font-size: smaller;
+	padding-left: 20px;
+}
+
+.search_history_result_url {
+	color: green;
+}
+
+/***************************/
+
+#search_box {
+	position: relative;
+	margin-bottom: 5px;
+}
+
+#logo{
+	width: 100px;
+	height: 25px;
+	vertical-align: middle;
+	margin-right: 10px;
+}
+
+#external_search_engine_menu {
+	font-size: smaller;
+}
+
+#center_pane_top_banner{
+	background-color: #F0F7F9;
+	font-size: smaller;
+	position: relative;
+	border-top: thin solid #6B90DA;
+	padding-top: 3px;
+	padding-bottom: 3px;
+}
+
+#center_pane_top_banner a{
+	color: #2200CC;
+}
+
+#search_counts{
+	position: absolute;
+	right: 3px;
+}
+
+#spell_suggestion_prompt{
+	color: red;
+	font-style: italic;
+}
+
+#prev_next_search_page {
+	margin-top: 20px;
+}
+
+#prev_next_search_page a{
+	color: #2200CC;
+	text-decoration: none;
+}
+
+.footnote{
+	font-size: smaller;
+}
+
+/***************************/
+
+#frame_top_menu{
+	font-size: smaller;
+	position: relative;
+	padding-bottom: 10px;
+	border-bottom: thin solid #6B90DA;
+}
+
+#frame_top_menu_right_side{
+	position: absolute;	
+	right: 0px;
+}
+
+/***************************/
+
+.widget{
+	border: thin solid #6B90DA;
+	margin: 10px;
+	font-size: smaller;
+}
+
+.widget_head{
+	background-color: #F0F7F9;
+	padding: 3px;
+	position: relative;
+}
+
+.show_hide_widget{
+	position: absolute;
+	right: 3px;
+}
+
+.show_hide_widget a{
+	color: #2200CC;
+}
+
+.widget_title{
+	font-weight: bold;
+}
+
+.widget_body{
+	padding: 3px;
+}
+
+/***************************/
+
+#session_searches a {
+	color: #2200CC;
+}
+
+.session_search_time {
+	font-size: smaller;
+	color: #666666;
+	padding-right: 10px;
+}
+
+.session_search_related {
+	font-weight: bold;
+}
+
+/***************************/
+
+
+.search_topic {
+	margin-top: 20px;
+	margin-bottom: 20px;
+}
+
+.search_topic .queries {
+	font-size: smaller;
+}
+
+.search_topic .attrs {
+	font-size: smaller;
+	color: green;
+}
+
+#sort_topics_by {
+	font-size: smaller;
+}
+
+#topic_queries a {
+	text-decoration: none;
+}
+
+#topic_clicks a {
+	text-decoration: none;
+}
+
+#topic_queries td {
+	padding-right: 10px;
+}
+
+#topic_clicks td {
+	padding-right: 10px;
+}
+
+span.search_result_date {
+	color: green;
+}
+
+span.recommendation {
+	font-weight: bold;
+	margin-left: 10px;
+	margin-right: 10px;
+}
