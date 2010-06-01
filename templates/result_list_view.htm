@@ -1,0 +1,26 @@
+<template:main>
+<template:foreach name="before_result_list">
+	${content}
+</template:foreach>
+<div id="search_result_list">
+	<template:foreach name="search_result">
+		<div class="search_result ${additional_search_result_class}">
+			<div class="search_result_title">
+				<span style="display:none">/click?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}</span>
+				<a href="${url}">${title}</a>
+			</div>
+			<div class="search_result_summary">
+				${summary}
+			</div>
+			<div class="search_result_meta">
+				<span class="search_result_display_url">${display_url}</span>
+				<span class="search_result_pos">(${original_rank})</span>
+				${more_meta}
+			</div>
+		</div>
+	</template:foreach>
+</div>
+<template:foreach name="after_result_list">
+	${content}
+</template:foreach>
+</template:main>

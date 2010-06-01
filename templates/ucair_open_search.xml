@@ -1,0 +1,10 @@
+<template:main>
+<OpenSearchDescription xmlns="http://a9.com/-/spec/opensearch/1.1/">
+<ShortName>UCAIR</ShortName>
+<Description>UCAIR Personalized Search</Description>
+<InputEncoding>UTF-8</InputEncoding>
+<Image width="16" height="16" type="image/x-icon">http://${address}/static/favicon.ico</Image>
+<Url type="text/html" template="http://${address}/search?query={searchTerms}">
+</Url>
+</OpenSearchDescription>
+</template:main>

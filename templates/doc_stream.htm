@@ -1,0 +1,84 @@
+<template:main>
+<html>
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+	<title>UCAIR - Document Streams</title>
+	<link rel="stylesheet" type="text/css" href="/static/main.css" />
+	<script type="text/javascript" src="/static/jquery.js"></script>
+	<script type="text/javascript">
+//<![CDATA[
+$(document).ready(function() {
+	$("select#stream_id").change(function() {
+		$(this).parents("form").submit();
+	});
+});
+//]]>
+	</script>
+</head>
+
+<body>
+
+	<div id="top_pane">
+
+		<form id="search_box" action="" method="get">
+			<img id="logo" src="/static/logo.png" alt="UCAIR Logo" />
+			<span id="top_user_id">User: ${user_id}</span>
+		</form>
+
+	</div>
+
+	<div id="center_pane">
+
+		<template:include source="search_menu.htm" />
+
+		<div id="left_pane">
+
+			<form action="/stream" method="get">
+				<select name="stream_id" id="stream_id">
+					<template:foreach name="each_stream">
+						<template:switch name="selected">
+							<template:case value="true">
+								<option selected="selected" value="${stream_id}">${stream_id}</option>
+							</template:case>
+							<template:default>
+								<option value="${stream_id}">${stream_id}</option>
+							</template:default>
+						</template:switch>
+					</template:foreach>
+				</select>
+			</form>
+
+<div id="document_list">
+	<template:foreach name="stream_doc">
+		<div class="search_result">
+			<h3 class="search_result_title">
+				<a href="${url}">${title}</a>
+			</h3>
+			<div class="search_result_meta">
+				<span class="search_result_date">${date}</span>
+				<template:if name="recommended" test="eq" value="true">
+					<span class="recommendation">Recommended from</span>
+					<span style="display:none">${sim}</span>
+					<span><a href="http://localhost:8080/display_search_topic?topic_id=${topic_id}">Topic ${topic_id}</a></span>
+				</template:if>
+			</div>
+			<div class="search_result_summary">
+				${summary}
+			</div>
+		</div>
+	</template:foreach>
+</div>
+
+		</div>
+
+		<div id="right_pane">
+		</div>
+	</div>
+
+	<div id="bottom_pane">
+		<template:include source="footer.htm" />
+	</div>
+
+</body>
+</html>
+</template:main>

@@ -1,0 +1,44 @@
+<template:main>
+<div class="widget" id="${widget_id}">
+	<div class="widget_head">
+		<span class="widget_title">${widget_name}</span>
+		<span class="show_hide_widget"><a href="/">Show</a></span>
+	</div>
+	<div class="widget_body">
+		<form action="/search" method="get">
+			<input type="hidden" name="sid" value="${search_id}" />
+			<input type="hidden" name="view" value="${view_id}" />
+
+			Reranking affects
+			<template:switch name="reranking_scope">
+				<template:case value="all">
+					<input type="radio" name="rerank_scope" value="all" checked="checked" /> all
+					<input type="radio" name="rerank_scope" value="top" /> top
+				</template:case>
+				<template:case value="top">
+					<input type="radio" name="rerank_scope" value="all" /> all
+					<input type="radio" name="rerank_scope" value="top" checked="checked" /> top
+				</template:case>
+			</template:switch>
+			<input type="text" name="max_promote" value="${max_results_to_promote}"  size="1" />
+			results
+
+			<br />
+
+			<template:switch name="rerank_despite_inadaptive_model">
+				<template:case value="true">
+					<input type="checkbox" name="rerank_inadaptive" value="on" checked="checked" />
+				</template:case>
+				<template:case value="false">
+					<input type="checkbox" name="rerank_inadaptive" value="on" />
+				</template:case>
+			</template:switch>
+			Rerank when search model is inadaptive
+
+			<br />
+
+			<input type="submit" name="settings" value="Change" />
+		</form>
+	</div>
+</div>
+</template:main>

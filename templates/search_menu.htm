@@ -1,0 +1,16 @@
+<template:main>
+<div id="center_pane_top_banner">
+	<template:foreach name="search_menu_item">
+		<span class="horizontal_link_item_${menu_item_active} search_menu_item">
+			<a href="${menu_item_link}">${menu_item_name}</a>
+		</span>
+	</template:foreach>
+	<template:if name="total_count" test="nempty">
+		<template:if name="end_pos" test="neq" value="0">
+			<span id="search_counts">
+				<strong>${start_pos}</strong> - <strong>${end_pos}</strong> of <strong>${total_count}</strong>
+			</span>
+		</template:if>
+	</template:if>
+</div>
+</template:main>
