@@ -40,4 +40,28 @@ void UserSearchRecord::addEvent(const shared_ptr<UserEvent> &event) {
 	UserEvent::insertByTimestamp(events, event);
 }
 
+void UserSearchRecord::setResultRating(int pos, const string &rating) {
+	if (rating.empty()) {
+		rated_results.erase(pos);
+	}
+	else {
+		rated_results[pos] = rating;
+	}
+}
+
+string UserSearchRecord::getResultRating(int pos) const {
+	map<int, string>::const_iterator itr = rated_results.find(pos);
+	if (itr != rated_results.end()) {
+		return itr->second;
+	}
+	return "";
+}
+
+bool UserSearchRecord::isRatingPositive(const string &rating) {
+	if (rating == "Y" || rating == "y") {
+		return true;
+	}
+	return false;
+}
+
 } // namespace ucair

@@ -45,7 +45,7 @@ void ResultListView::render(templating::TemplateData &t_main, Request &request, 
 		if (result){
 			TemplateData t_result = t_view.addChild("search_result");
 			t_result.set("result_pos", lexical_cast<string>(result_pos));
-			renderResult(t_result, *user, *search, *result);
+			renderResult(t_result, *search_record, *search, *result);
 		}
 	}
 
@@ -64,7 +64,7 @@ void ResultListView::makeRanking(User &user, const Search &search, vector<int> &
 	}
 }
 
-void ResultListView::renderResult(TemplateData &t_result, User &user, const Search &search, const SearchResult &result){
+void ResultListView::renderResult(TemplateData &t_result, UserSearchRecord &search_record, const Search &search, const SearchResult &result){
 	t_result.set("original_rank", lexical_cast<string>(result.original_rank));
 	if (result.formatted_title.empty()){
 		t_result.set("title", result.title);
@@ -89,6 +89,8 @@ void ResultListView::renderResult(TemplateData &t_result, User &user, const Sear
 	else{
 		t_result.set("display_url", result.formatted_display_url, false);
 	}
+	string rating = search_record.getResultRating(result.original_rank);
+	t_result.set("rating", rating);
 }
 
 } // namespace ucair

@@ -42,13 +42,13 @@ SearchModel QueryMLEModelGen::getModel(const UserSearchRecord &search_record, co
 
 ////////////////////////////////////////////////////////////////////////////////
 
-WeightedClickModel::WeightedClickModel(const string &model_name, const string &model_description, double query_term_weight_, double clicked_result_term_weight_, double unclicked_result_term_weight_) :
+WeightedClickModelGen::WeightedClickModelGen(const string &model_name, const string &model_description, double query_term_weight_, double clicked_result_term_weight_, double unclicked_result_term_weight_) :
 	SearchModelGen(model_name, model_description),
 	query_term_weight(query_term_weight_),
 	clicked_result_term_weight(clicked_result_term_weight_),
 	unclicked_result_term_weight(unclicked_result_term_weight_) {}
 
-bool WeightedClickModel::isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const {
+bool WeightedClickModelGen::isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const {
 	BOOST_FOREACH(const shared_ptr<UserEvent> &event, search_record.getEvents()) {
 		if (event->timestamp <= search_model.getTimestamp()) {
 			continue;
@@ -60,11 +60,11 @@ bool WeightedClickModel::isOutdated(const UserSearchRecord &search_record, const
 	return false;
 }
 
-bool WeightedClickModel::isAdaptive(const UserSearchRecord &search_record) const {
+bool WeightedClickModelGen::isAdaptive(const UserSearchRecord &search_record) const {
 	return clicked_result_term_weight > 0.0 && ! search_record.getClickedResults().empty();
 }
 
-void WeightedClickModel::countTermsWeighted(const UserSearchRecord &search_record, const Search &search, map<int, double> &term_counts) const {
+void WeightedClickModelGen::countTermsWeighted(const UserSearchRecord &search_record, const Search &search, map<int, double> &term_counts) const {
 	term_counts.clear();
 
 	if (query_term_weight > 0.0) {
@@ -111,7 +111,7 @@ RocchioModelGen::RocchioModelGen(const string &model_name,
 		double query_term_weight,
 		double clicked_result_term_weight,
 		double unclicked_result_term_weight) :
-		WeightedClickModel(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight) {
+		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight) {
 }
 
 SearchModel RocchioModelGen::getModel(const UserSearchRecord &search_record, const Search &search) const {
@@ -130,7 +130,7 @@ MixtureModelGen::MixtureModelGen(const string &model_name,
 		double clicked_result_term_weight,
 		double unclicked_result_term_weight,
 		double bg_coeff_) :
-		WeightedClickModel(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight),
+		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight),
 		bg_coeff(bg_coeff_) {
 }
 
@@ -139,6 +139,81 @@ SearchModel MixtureModelGen::getModel(const UserSearchRecord &search_record, con
 
 	map<int, double> term_counts;
 	countTermsWeighted(search_record, search, term_counts);
+	vector<tuple<double, double, double> > values;
+	for (map<int, double>::const_iterator itr = term_counts.begin(); itr != term_counts.end(); ++ itr) {
+		double f = itr->second;
+		double p = getIndexManager().getColProb(itr->first);
+		values.push_back(make_tuple(f, p, 0.0));
+	}
+	estimateMixture(values, bg_coeff);
+	int i = 0;
+	for (map<int, double>::const_iterator itr = term_counts.begin(); itr != term_counts.end(); ++ itr, ++ i) {
+		double q = values[i].get<2>();
+		if (q > 0.0) {
+			model.probs.insert(make_pair(itr->first, q));
+		}
+	}
+	truncate(*indexing::ValueMap::from(model.probs), 20, 0.001);
+	return model;
+}
+
+////////////////////////////////////////////////////////////////////////////////
+
+RelevanceFeedbackModelGen::RelevanceFeedbackModelGen(const string &model_name, const string &model_description, double bg_coeff_) :
+	SearchModelGen(model_name, model_description), bg_coeff(bg_coeff_) {
+}
+
+bool RelevanceFeedbackModelGen::isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const {
+	BOOST_FOREACH(const shared_ptr<UserEvent> &event, search_record.getEvents()) {
+		if (event->timestamp <= search_model.getTimestamp()) {
+			continue;
+		}
+		if (typeid(*event) == typeid(RateResultEvent)) {
+			return true;
+		}
+	}
+	return false;
+}
+
+bool RelevanceFeedbackModelGen::isAdaptive(const UserSearchRecord &search_record) const {
+	return ! search_record.getRatedResults().empty();
+}
+
+SearchModel RelevanceFeedbackModelGen::getModel(const UserSearchRecord &search_record, const Search &search) const {
+	SearchModel model(generateModelName(), generateModelDescription(), isAdaptive(search_record));
+
+	map<int, double> term_counts;
+
+	indexing::SimpleIndex *index = search_record.getIndex();
+	if (index) {
+		const map<int, string> &ratings = search_record.getRatedResults();
+
+		typedef pair<int, string> P1;
+		BOOST_FOREACH(const P1 &p1, ratings) {
+			int result_pos = p1.first;
+			string rating = p1.second;
+			if (UserSearchRecord::isRatingPositive(rating)) {
+				string doc_name = buildDocName(search_record.getSearchId(), result_pos);
+				int doc_id = index->getDocDict().getId(doc_name);
+				if (doc_id > 0) {
+					const vector<pair<int, float> >* term_list = index->getTermList(doc_id);
+					if (term_list) {
+						typedef pair<int, float> P2;
+						BOOST_FOREACH(const P2 &p2, *term_list) {
+							int term_id = p2.first;
+							double term_weight = p2.second;
+							if (term_weight > 0.0) {
+								map<int, double>::iterator itr;
+								tie(itr, tuples::ignore) = term_counts.insert(make_pair(term_id, 0.0));
+								itr->second += term_weight;
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
 	vector<tuple<double, double, double> > values;
 	for (map<int, double>::const_iterator itr = term_counts.begin(); itr != term_counts.end(); ++ itr) {
 		double f = itr->second;
@@ -237,6 +312,11 @@ bool SearchModelManager::initialize(){
 			long_term_search_model_max_em_tries,
 			long_term_search_model_max_em_iterations));
 	getSearchModelManager().addModelGen(long_term);
+
+	shared_ptr<RelevanceFeedbackModelGen> short_term_explicit(new RelevanceFeedbackModelGen("short-term-explicit",
+			"Short-term explicit feedback",
+			bg_coeff));
+	getSearchModelManager().addModelGen(short_term_explicit);
 	return true;
 }
 

@@ -67,6 +67,7 @@ bool BasicSearchUI::initialize(){
 	getUCAIRServer().registerHandler(RequestHandler::CGI_HTML, "", bind(&BasicSearchUI::displaySearchPage, this, _1, _2));
 	getUCAIRServer().registerHandler(RequestHandler::CGI_HTML, "/search", bind(&BasicSearchUI::displaySearchPage, this, _1, _2));
 	getUCAIRServer().registerHandler(RequestHandler::CGI_HTML, "/click", bind(&BasicSearchUI::clickResult, this, _1, _2));
+	getUCAIRServer().registerHandler(RequestHandler::CGI_OTHER, "/rate", bind(&BasicSearchUI::rateResult, this, _1, _2));
 	getUCAIRServer().registerHandler(RequestHandler::CGI_HTML, "/external_search", bind(&BasicSearchUI::useExternalSearchEngine, this, _1, _2));
 	shared_ptr<ResultListView> base_view(new ResultListView("base", "Base"));
 	getPageModuleManager().addPageModule(base_view);
@@ -356,6 +357,54 @@ void BasicSearchUI::clickResult(Request &request, Reply &reply){
 	}
 
 	getUCAIRServer().err(reply_status::not_found);
+}
+
+void BasicSearchUI::rateResult(Request &request, Reply &reply){
+	User *user = getUserManager().getUser(request, true);
+	assert(user);
+
+	int result_pos = 0;
+	try{
+		string s = request.getFormData("pos");
+		if (! s.empty()){
+			result_pos = lexical_cast<int>(s);
+		}
+	}
+	catch (bad_lexical_cast &){
+		getUCAIRServer().err(reply_status::bad_request);
+	}
+	string rating = request.getFormData("rating");
+
+	string search_id = request.getFormData("sid");
+	string view_id = request.getFormData("view");
+	const SearchResult *result = getSearchProxy().getResult(search_id, result_pos);
+	if (result){
+		// Adds an event of user explicitly rating the result.
+		shared_ptr<RateResultEvent> event(new RateResultEvent);
+		event->search_id = search_id;
+		event->result_pos = result_pos;
+		event->rating = rating;
+		user->addEvent(event);
+
+		UserSearchRecord *search_record = user->getSearchRecord(search_id);
+		if (search_record){
+			search_record->setResultRating(result_pos, rating);
+			// Mark all previous search results as viewed.
+			const string property_name = "ranking_" + view_id;
+			if (search_record->properties.has(property_name)){
+				vector<int> &ranking = search_record->properties.get<vector<int> >(property_name);
+				BOOST_FOREACH(const int &pos, ranking){
+					search_record->addViewedResult(pos);
+					if (pos == result_pos){
+						break;
+					}
+				}
+			}
+		}
+	}
+
+	// Empty reply
+	reply.setHeader("Content-Type", "text/plain");
 }
 
 void BasicSearchUI::renderSearchCounts(TemplateData &t_main, long long total_result_count, int start_pos, int result_count){

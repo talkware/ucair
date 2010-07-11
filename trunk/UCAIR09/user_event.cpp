@@ -45,6 +45,27 @@ void ClickResultEvent::loadValue (const string &value) {
 	url = value.substr(pos + 1);
 }
 
+RateResultEvent::RateResultEvent() :
+	result_pos(0) {
+}
+
+const string RateResultEvent::type("rate result");
+
+string RateResultEvent::saveValue() const {
+	return str(format("%d\t%s") % result_pos % rating);
+}
+
+void RateResultEvent::loadValue (const string &value) {
+	size_t pos = value.find('\t');
+	try {
+		result_pos = lexical_cast<int>(value.substr(0, pos));
+	}
+	catch (bad_lexical_cast &) {
+		throw Error() << ErrorMsg("Failed to load RateResultEvent from string");
+	}
+	rating = value.substr(pos + 1);
+}
+
 ViewSearchPageEvent::ViewSearchPageEvent() :
 	start_pos(0),
 	result_count(0) {

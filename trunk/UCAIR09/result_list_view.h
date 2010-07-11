@@ -29,7 +29,7 @@ protected:
 	virtual void makeRanking(User &user, const Search &search, std::vector<int> &ranking);
 
 	/// Renders a given search result.
-	virtual void renderResult(templating::TemplateData &t_result, User &user, const Search &search, const SearchResult &result);
+	virtual void renderResult(templating::TemplateData &t_result, UserSearchRecord &search_record, const Search &search, const SearchResult &result);
 };
 
 } // namespace ucair

@@ -306,10 +306,18 @@ void LongTermHistoryManager::loadEvents(sqlite::Connection &conn) {
 				event->timestamp = timestamp;
 				event->loadValue(event_value);
 				search_record.addEvent(event);
-				shared_ptr<ClickResultEvent> click_result_event = dynamic_pointer_cast<ClickResultEvent>(event);
-				if (click_result_event){
-					search_record.addClickedResult(click_result_event->result_pos);
-				}
+				do {
+					shared_ptr<ClickResultEvent> click_result_event = dynamic_pointer_cast<ClickResultEvent>(event);
+					if (click_result_event){
+						search_record.addClickedResult(click_result_event->result_pos);
+						break;
+					}
+					shared_ptr<RateResultEvent> rate_result_event = dynamic_pointer_cast<RateResultEvent>(event);
+					if (rate_result_event) {
+						search_record.setResultRating(rate_result_event->result_pos, rate_result_event->rating);
+						break;
+					}
+				} while (false);
 			}
 		}
 	}

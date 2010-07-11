@@ -182,7 +182,7 @@ void UCAIRServer::dispatchRequest(http::server::Request &req, http::server::Repl
 
 			if (redirect_try == 0){
 				// If CGI, parse form data.
-				if (selected_handler->classification == RequestHandler::CGI_HTML){
+				if (selected_handler->classification == RequestHandler::CGI_HTML || selected_handler->classification == RequestHandler::CGI_OTHER){
 					reply.status = parseFormData(request);
 					if (reply.status != reply_status::ok){
 						break;

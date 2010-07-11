@@ -23,7 +23,8 @@ SolidCompression=yes
 Name: english; MessagesFile: compiler:Default.isl
 
 [Tasks]
-Name: desktopicon; Description: {cm:CreateDesktopIcon}; GroupDescription: {cm:AdditionalIcons}; Flags: unchecked
+Name: desktopicon; Description: {cm:CreateDesktopIcon}; Flags: unchecked
+Name: runatstartup; Description: Run at Windows start up
 
 [Files]
 Source: Release\UCAIR09.exe; DestDir: {app}; Flags: ignoreversion
@@ -34,12 +35,13 @@ Source: user_files\*; DestDir: {app}\user_files; Flags: ignoreversion recursesub
 Source: config.ini; DestDir: {app}; Flags: ignoreversion
 Source: default_pref.ini; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
-Source: Readme.txt; DestDir: {app}; Flags: ignoreversion
+Source: RunningOnWindows.URL; DestDir: {app}; Flags: ignoreversion
 
 [Icons]
-Name: {group}\UCAIR; Filename: {app}\UCAIR09.exe
-Name: {commondesktop}\UCAIR; Filename: {app}\UCAIR09.exe; Tasks: desktopicon
+Name: {group}\UCAIR; Filename: {app}\UCAIR09.exe; WorkingDir: {app}
+Name: {commondesktop}\UCAIR; Filename: {app}\UCAIR09.exe; Tasks: desktopicon; WorkingDir: {app}
+Name: {commonstartup}\UCAIR; Filename: {app}\UCAIR09.exe; WorkingDir: {app}; Tasks: runatstartup
 
 [Run]
 Filename: {app}\UCAIR09.exe; Description: {cm:LaunchProgram,UCAIR}; Flags: nowait postinstall skipifsilent runascurrentuser
-Filename: {app}\Readme.txt; Description: Please do read this README first.; Flags: nowait postinstall skipifsilent shellexec
+Filename: {app}\RunningOnWindows.URL; Description: Please read this first; Flags: nowait postinstall skipifsilent shellexec

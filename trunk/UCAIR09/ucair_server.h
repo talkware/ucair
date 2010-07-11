@@ -124,7 +124,7 @@ struct RequestHandler {
 
 	/// Whether the handler serves static files or produces dynamic CGI content. OTHER is reserved.
 	enum Classification {
-		STATIC, CGI_HTML, OTHER
+		STATIC, CGI_HTML, CGI_OTHER
 	} classification;
 
 	typedef boost::function<void(Request&, Reply&)> Callback;
