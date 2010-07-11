@@ -1,0 +1,12 @@
+#summary A tutorial on adding relevance feedback.
+
+= Introduction =
+
+This tutorial shows how to add support for (explicit) relevance feedback to UCAIR.
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
