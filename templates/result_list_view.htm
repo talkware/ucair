@@ -15,7 +15,12 @@
 			<div class="search_result_meta">
 				<span class="search_result_display_url">${display_url}</span>
 				<span class="search_result_pos">(${original_rank})</span>
-				${more_meta}
+
+				<span class="search_result_rating" style="display:none">${rating}</span>
+				<span class="search_result_rating_y">Y</span>
+				<span class="search_result_rating_n">N</span>
+				<span class="search_result_rating_c">C</span>
+				<span class="search_result_rating_url" style="display:none">/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=</span>
 			</div>
 		</div>
 	</template:foreach>

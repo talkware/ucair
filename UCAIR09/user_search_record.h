@@ -48,10 +48,23 @@ public:
 	const util::UniqueList& getViewedResults() const { return viewed_results; }
 	/// Returns a list of clicked results.
 	const util::UniqueList& getClickedResults() const { return clicked_results; }
-	/// Adds a viewed result.
+	/// Returns a list of explicitly rated results and their ratings.
+	const std::map<int, std::string> getRatedResults() const { return rated_results; }
+	/// Mark a result as viewed.
 	void addViewedResult(int pos) { viewed_results.push_back(pos); }
-	/// Adds a clicked result.
+	/// Marks a result as clicked.
 	void addClickedResult(int pos) { clicked_results.push_back(pos); }
+	/*! Marks a result as explicitly rated.
+	 *  If rating is empty, remove the rating.
+	 */
+	void setResultRating(int pos, const std::string &rating);
+	/*! Returns the rating of the result at a certain position.
+	 *  Returns an empty string if result is not rated.
+	 */
+	std::string getResultRating(int pos) const;
+
+	/// Whether a rating string represents positive feedback.
+	static bool isRatingPositive(const std::string &rating);
 
 	/// Returns all user events on this search.
 	const std::list<boost::shared_ptr<UserEvent> >& getEvents() const { return events; }
@@ -82,6 +95,7 @@ private:
 	// Unique list ensures results are ordered by insertion order and only occur once.
 	util::UniqueList viewed_results;
 	util::UniqueList clicked_results;
+	std::map<int, std::string> rated_results;
 	bool is_from_past_history;
 	UserSearchRecord *prev;
 	UserSearchRecord *next;

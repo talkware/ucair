@@ -58,3 +58,51 @@ function showHideWidget(widget, change){
 		$(".widget_body", widget).hide();
 	}
 }
+
+function showRating(ratingElem, sendRating) {
+	var y = ratingElem.nextAll(".search_result_rating_y");
+	var n = ratingElem.nextAll(".search_result_rating_n");
+	var c = ratingElem.nextAll(".search_result_rating_c");
+	var val = ratingElem.text();
+	if (val == "Y") {
+		y.addClass("rated").show();
+		n.removeClass("rated").hide();
+		c.show();
+	}
+	else if (val == "N") {
+		y.removeClass("rated").hide();
+		n.addClass("rated").show();
+		c.show();
+	}
+	else {
+		y.removeClass("rated").show();
+		n.removeClass("rated").show();
+		c.hide();
+	}
+	if (sendRating) {
+		var url = ratingElem.nextAll(".search_result_rating_url").text();
+		$.get(url + encodeURI(val));
+	}
+}
+
+function prepareRatings() {
+	$(".search_result_rating").each(function() {
+		var ratingElem = $(this);
+		showRating(ratingElem, false);
+		var y = ratingElem.nextAll(".search_result_rating_y");
+		var n = ratingElem.nextAll(".search_result_rating_n");
+		var c = ratingElem.nextAll(".search_result_rating_c");
+		y.click(function() {
+			ratingElem.text("Y");
+			showRating(ratingElem, true);
+		});
+		n.click(function() {
+			ratingElem.text("N");
+			showRating(ratingElem, true);
+		});
+		c.click(function() {
+			ratingElem.text("");
+			showRating(ratingElem, true);
+		});
+	});
+}

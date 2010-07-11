@@ -36,6 +36,9 @@ public:
 	/// Called when a user clicks on a search result.
 	void clickResult(Request &request, Reply &reply);
 
+	/// Called when a user gives explicit rating of a search result.
+	void rateResult(Request &request, Reply &reply);
+
 	/// Shows an external search engine page.
 	void useExternalSearchEngine(Request &request, Reply &reply);
 

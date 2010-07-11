@@ -165,8 +165,8 @@ void RerankingResultListView::makeRanking(User &user, const Search &search, vect
 	copy(adaptive_ranking.begin(), adaptive_ranking.end(), back_inserter(ranking));
 }
 
-void RerankingResultListView::renderResult(templating::TemplateData &t_result, User &user, const Search &search, const SearchResult &result){
-	ResultListView::renderResult(t_result, user, search, result);
+void RerankingResultListView::renderResult(templating::TemplateData &t_result, UserSearchRecord &search_record, const Search &search, const SearchResult &result) {
+	ResultListView::renderResult(t_result, search_record, search, result);
 	if (promoted_results.find(result.original_rank) != promoted_results.end()){
 		t_result.set("additional_search_result_class", "promoted_search_result");
 	}

@@ -69,9 +69,9 @@ public:
 };
 
 /// Generates search models by assigning different weights to query terms, clicked result terms, unclicked result terms.
-class WeightedClickModel: public SearchModelGen {
+class WeightedClickModelGen: public SearchModelGen {
 public:
-	WeightedClickModel(const std::string &model_name,
+	WeightedClickModelGen(const std::string &model_name,
 			const std::string &model_description,
 			double query_term_weight,
 			double clicked_result_term_weight,
@@ -89,7 +89,7 @@ protected:
 };
 
 /// Generates search models using Rocchio feedback.
-class RocchioModelGen: public WeightedClickModel {
+class RocchioModelGen: public WeightedClickModelGen {
 public:
 	RocchioModelGen(const std::string &model_name,
 			const std::string &model_description,
@@ -101,7 +101,7 @@ public:
 };
 
 /// Generates search models using mixture model based feedback.
-class MixtureModelGen: public WeightedClickModel {
+class MixtureModelGen: public WeightedClickModelGen {
 public:
 	MixtureModelGen(const std::string &model_name,
 			const std::string &model_description,
@@ -111,6 +111,24 @@ public:
 			double bg_coeff);
 
 	SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const;
+
+private:
+	double bg_coeff;
+};
+
+/// Generates search models for explicit relevance feedback using mixture model.
+class RelevanceFeedbackModelGen: public SearchModelGen {
+public:
+	RelevanceFeedbackModelGen(const std::string &model_name,
+			const std::string &model_description,
+			double bg_coeff);
+
+	bool isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const;
+
+	SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const;
+
+protected:
+	bool isAdaptive(const UserSearchRecord &search_record) const;
 
 private:
 	double bg_coeff;

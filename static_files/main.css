@@ -82,6 +82,7 @@ span.horizontal_link_item_inactive{
 /***************************/
 
 .search_result{
+	width: 40em;
 	margin-top: 20px;
 	margin-bottom: 20px;
 }
@@ -102,6 +103,32 @@ span.horizontal_link_item_inactive{
 	margin-left: 10px;
 	margin-right: 10px;
 	color: #7777CC;
+}
+
+.search_result_rating_y, .search_result_rating_n, .search_result_rating_c{
+	color: #7777CC;
+	margin-left: 5px;
+	margin-right: 5px;
+	padding-left: 2px;
+	padding-right: 2px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.search_result_rating_y.rated {
+	color: #007700;
+	background-color: #F0F0F0;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: auto;
+}
+
+.search_result_rating_n.rated {
+	color: #770000;
+	background-color: #F0F0F0;
+	font-weight: bold;
+	text-decoration: none;
+	cursor: auto;
 }
 
 .promoted_search_result{

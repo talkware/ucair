@@ -50,6 +50,22 @@ public:
 	void loadValue (const std::string &value);
 };
 
+/// An event of user explicitly rating a result.
+class RateResultEvent: public UserEvent {
+public:
+	RateResultEvent();
+
+	IMPLEMENT_CLONE(RateResultEvent)
+
+	int result_pos; ///< rated result pos
+	std::string rating; ///< explicit rating
+
+	static const std::string type;
+	std::string getType() const { return type; }
+	std::string saveValue() const;
+	void loadValue (const std::string &value);
+};
+
 /// An event of user viewing a search page.
 class ViewSearchPageEvent: public UserEvent {
 public:
