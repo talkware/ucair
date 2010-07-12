@@ -6,11 +6,17 @@ This tutorial shows how to add support for (explicit) relevance feedback to UCAI
 
 = Step 1: UI for relevance judgment =
 
+In this step we'll change the HTML to display clickable links that can be used to provide relevance judgment. There is a "Y" link to indicate positive relevance, a "N" link to indicate negative relevance, and an initially hidden "C" link to cancel previous made relevance judgment:
+
 [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/result_list_view.htm result_list_view.htm]
 {{{
-                                <span class="search_result_rating" style="display:none">${rating}</span>
-                                <span class="search_result_rating_y">Y</span>
-                                <span class="search_result_rating_n">N</span>
-                                <span class="search_result_rating_c">C</span>
-                                <span class="search_result_rating_url" style="display:none">/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=</span>
+<span class="search_result_rating" style="display:none">${rating}</span>
+<span class="search_result_rating_y">Y</span>
+<span class="search_result_rating_n">N</span>
+<span class="search_result_rating_c">C</span>
+<span class="search_result_rating_url" style="display:none">/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=</span>
 }}}
+
+I use a hidden `span.search_result_rating` element to hold the current rating, and a hidden `span.search_result_rating_url` element to hold the url for rating submission.
+
+Note the use of template variables such as ${search_id} and ${result_pos}. These are replaced by actual values when the HTML pages are rendered. I have written a custom C++ based template engine ([http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.h template_engine.h] [http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.cpp template_engine.cpp]) that provides somewhat comparable functionality as JSP/PHP. 
