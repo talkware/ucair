@@ -242,3 +242,233 @@ bool UserSearchRecord::isRatingPositive(const string &rating) {
 }}}
 
 Finally, we mark all search results before the judged search result as being "viewed". This is done by calling `UserSearchRecord::addViewedResult()`
+
+= Step 3: Persist relevance judgments=
+
+We need to persist the user's relevance judgments to database, so that they can be recovered when we need to do any offline analysis, or can be used to built a long-term user model.
+
+We have a user_events table that stores all the user event attributes, and we only need a way to serialize custom attributes into the `value` field:
+{{{
+CREATE TABLE user_events(
+search_id TEXT NOT NULL,
+timestamp INTEGER NOT NULL,
+type TEXT NOT NULL,
+value TEXT NOT NULL)
+}}}
+
+Following is the definition of the RateResultEvent class:
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/user_event.h user_event.h]
+{{{
+/// An event of user explicitly rating a result.
+class RateResultEvent: public UserEvent {
+public:
+        RateResultEvent();
+
+        IMPLEMENT_CLONE(RateResultEvent)
+
+        int result_pos; ///< rated result pos
+        std::string rating; ///< explicit rating
+
+        static const std::string type;
+        std::string getType() const { return type; }
+        std::string saveValue() const;
+        void loadValue (const std::string &value);
+};
+}}}
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/user_event.cpp user_event.cpp]
+{{{
+RateResultEvent::RateResultEvent() :
+        result_pos(0) {
+}
+
+const string RateResultEvent::type("rate result");
+
+string RateResultEvent::saveValue() const {
+        return str(format("%d\t%s") % result_pos % rating);
+}
+
+void RateResultEvent::loadValue (const string &value) {
+        size_t pos = value.find('\t');
+        try {
+                result_pos = lexical_cast<int>(value.substr(0, pos));
+        }
+        catch (bad_lexical_cast &) {
+                throw Error() << ErrorMsg("Failed to load RateResultEvent from string");
+        }
+        rating = value.substr(pos + 1);
+}
+}}}
+
+Note how the `loadValue` and `saveValue` methods serialize event attributes.
+
+
+The detailed logic for persisting user events is inside [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/long_term_history_manager.cpp long_term_history_manager.cpp]. In particular, when it's load user events, it set the search result rating if the event is of type `RateResultEvent`.
+
+{{{
+shared_ptr<RateResultEvent> rate_result_event = dynamic_pointer_cast<RateResultEvent>(event);
+if (rate_result_event) {
+       search_record.setResultRating(rate_result_event->result_pos, rate_result_event->rating);
+       break;
+}
+}}}
+
+= Step 4: Construct the relevance feedback model =
+
+UCAIR focuses on language models, so it stores the term-probability mapping inside a `SearchModel` object:
+
+[http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/search_model.h search_model.h]
+{{{
+/// A language model for a search.
+class SearchModel {
+public:
+        SearchModel(); // do not use
+        SearchModel(const std::string &model_name, const std::string &model_description, bool adaptive = false);
+
+        std::map<int, double> probs; ///< term probs in the language model
+        util::Properties properties; ///< additional attributes
+
+        /// Whether the search model is user-adaptive.
+        bool isAdaptive() const { return adaptive; }
+
+        /// Returns name of the search model.
+        std::string getModelName() const { return model_name; }
+        /// Returns description of the search model.
+        std::string getModelDescription() const { return model_description; }
+        /// Returns creation time of the search model.
+        time_t getTimestamp() const { return timestamp; }
+
+private:
+        std::string model_name;
+        std::string model_description;
+        time_t timestamp;
+        bool adaptive;
+};
+}}}
+
+There is a `SearchModelGen` class that controls how to generate a `SearchModel`, and different language-model based retrieval methods should provide different implementations of `SearchModelGen`
+
+[http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/search_model.h search_model.h]
+{{{
+/// A search model generator.
+class SearchModelGen {
+public:
+        SearchModelGen(const std::string &model_name, const std::string &model_description);
+        virtual ~SearchModelGen() {}
+
+        /// Generates a model for a user search.
+        virtual SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const = 0;
+        /// Whether a given model for a user search is out-dated (when new information about the user search becomes available).
+        virtual bool isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const { return false; }
+
+        /// Returns name of generated search models.
+        std::string generateModelName() const { return model_name; }
+        /// Returns description of generated search models.
+        std::string generateModelDescription() const { return model_description; }
+
+private:
+        std::string model_name;
+        std::string model_description;
+};
+}}}
+
+In our case we provide a subclass `RelevanceFeedbackModelGen` that implements relevance feedback:
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/search_model.h search_model.h]
+{{{
+/// Generates search models for explicit relevance feedback using mixture model.
+class RelevanceFeedbackModelGen: public SearchModelGen {
+public:
+        RelevanceFeedbackModelGen(const std::string &model_name,
+                        const std::string &model_description,
+                        double bg_coeff);
+
+        bool isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const;
+
+        SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const;
+
+protected:
+        bool isAdaptive(const UserSearchRecord &search_record) const;
+
+private:
+        double bg_coeff;
+};
+}}}
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/search_model.cpp search_model.cpp]
+{{{
+RelevanceFeedbackModelGen::RelevanceFeedbackModelGen(const string &model_name, const string &model_description, double bg_coeff_) :
+        SearchModelGen(model_name, model_description), bg_coeff(bg_coeff_) {
+}
+
+bool RelevanceFeedbackModelGen::isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const {
+        BOOST_FOREACH(const shared_ptr<UserEvent> &event, search_record.getEvents()) {
+                if (event->timestamp <= search_model.getTimestamp()) {
+                        continue;
+                }
+                if (typeid(*event) == typeid(RateResultEvent)) {
+                        return true;
+                }
+        }
+        return false;
+}
+
+bool RelevanceFeedbackModelGen::isAdaptive(const UserSearchRecord &search_record) const {
+        return ! search_record.getRatedResults().empty();
+}
+
+SearchModel RelevanceFeedbackModelGen::getModel(const UserSearchRecord &search_record, const Search &search) const {
+        SearchModel model(generateModelName(), generateModelDescription(), isAdaptive(search_record));
+
+        map<int, double> term_counts;
+
+        indexing::SimpleIndex *index = search_record.getIndex();
+        if (index) {
+                const map<int, string> &ratings = search_record.getRatedResults();
+
+                typedef pair<int, string> P1;
+                BOOST_FOREACH(const P1 &p1, ratings) {
+                        int result_pos = p1.first;
+                        string rating = p1.second;
+                        if (UserSearchRecord::isRatingPositive(rating)) {
+                                string doc_name = buildDocName(search_record.getSearchId(), result_pos);
+                                int doc_id = index->getDocDict().getId(doc_name);
+                                if (doc_id > 0) {
+                                        const vector<pair<int, float> >* term_list = index->getTermList(doc_id);
+                                        if (term_list) {
+                                                typedef pair<int, float> P2;
+                                                BOOST_FOREACH(const P2 &p2, *term_list) {
+                                                        int term_id = p2.first;
+                                                        double term_weight = p2.second;
+                                                        if (term_weight > 0.0) {
+                                                                map<int, double>::iterator itr;
+                                                                tie(itr, tuples::ignore) = term_counts.insert(make_pair(term_id, 0.0));
+                                                                itr->second += term_weight;
+                                                        }
+                                                }
+                                        }
+                                }
+                        }
+                }
+        }
+
+
+        vector<tuple<double, double, double> > values;
+        for (map<int, double>::const_iterator itr = term_counts.begin(); itr != term_counts.end(); ++ itr) {
+                double f = itr->second;
+                double p = getIndexManager().getColProb(itr->first);
+                values.push_back(make_tuple(f, p, 0.0));
+        }
+        estimateMixture(values, bg_coeff);
+        int i = 0;
+        for (map<int, double>::const_iterator itr = term_counts.begin(); itr != term_counts.end(); ++ itr, ++ i) {
+                double q = values[i].get<2>();
+                if (q > 0.0) {
+                        model.probs.insert(make_pair(itr->first, q));
+                }
+        }
+        truncate(*indexing::ValueMap::from(model.probs), 20, 0.001);
+        return model;
+}
+}}}
