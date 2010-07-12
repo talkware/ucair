@@ -116,9 +116,7 @@ When "Y" is clicked, the following happens:
 
 Similar things happen when "N" is clicked.
 
-`prepareRatings` is also called using page load:
-
-[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/basic_search.htm basic_search.htm]
+`prepareRatings` is also called during page load: [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/basic_search.htm basic_search.htm]
 
 = Step 2: Record the relevance judgment at server side =
 
@@ -134,7 +132,8 @@ The handler type is `CGI_OTHER`. We use `CGI_HTML` for CGI handlers that dynamic
 
 The handler will invoke `BasicSearchUI::rateResult` whenever the request URL starts with `/rate`. The `Request` object is passed as the 1st arg, and the `Reply` object is passed as the 2nd arg.
 
-Now let's look at the handler itself.
+Now let's look at the handler itself:
+
 [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/basic_search_ui.cpp basic_search_ui.cpp]
 {{{
 void BasicSearchUI::rateResult(Request &request, Reply &reply){
