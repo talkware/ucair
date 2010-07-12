@@ -2,11 +2,15 @@
 
 = Introduction =
 
-This tutorial shows how to add support for (explicit) relevance feedback to UCAIR.
+This tutorial shows how to add support for (explicit) relevance feedback to UCAIR. Relevance feedback allows user to explicitly specify whether a document is relevant or not, and uses this information to help rerank the unjudged documents.
 
-= Details =
+= Step 1: UI for relevance judgment =
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/result_list_view.htm result_list_view.htm]
+{{{
+                                <span class="search_result_rating" style="display:none">${rating}</span>
+                                <span class="search_result_rating_y">Y</span>
+                                <span class="search_result_rating_n">N</span>
+                                <span class="search_result_rating_c">C</span>
+                                <span class="search_result_rating_url" style="display:none">/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=</span>
+}}}
