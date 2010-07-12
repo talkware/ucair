@@ -185,3 +185,58 @@ void BasicSearchUI::rateResult(Request &request, Reply &reply){
         reply.setHeader("Content-Type", "text/plain");
 }
 }}}
+
+First we get the `User` object from request. After the user logs in, each request carries a cookie on user id, so we can easily look up which user the request is coming from. The `User` object stores everything about a user, from their preferences to past search history.
+
+Then we get the params `pos`, `rating`, `sid`, `view` from the request. They are parsed from the URL `/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=Y` and can be retrieved using `Request.getFormData()`
+
+`search_id` uniquely identifies a search instance, and `result_pos` is the original rank of the search result, so from these two we can get the `SearchResult` object, facilitated by the global `SearchProxy` object, which stores all search results indexed by search id and result pos. The `SearchResult` object contains information about a particular result document, including title, summary snippet, url, etc.
+
+The `UserSearchRecord` object stores all user activities on a particular search. Most importantly, it has all the user events, including this `RateResultEvent`, which is a subclass of `UserEvent`. These events can be persisted to database and reconstructed (discussed later).
+
+We call UserSearchRecord::setResultRating() to store the relevance judgment. The judgments are part of UserSearchRecord:
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/user_search_record.h user_search_record.h]
+{{{
+public:
+        /*! Marks a result as explicitly rated.
+         *  If rating is empty, remove the rating.
+         */
+        void setResultRating(int pos, const std::string &rating);
+        /*! Returns the rating of the result at a certain position.
+         *  Returns an empty string if result is not rated.
+         */
+        std::string getResultRating(int pos) const;
+
+        /// Whether a rating string represents positive feedback.
+        static bool isRatingPositive(const std::string &rating);
+private:
+        std::map<int, std::string> rated_results;
+}}}
+
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/user_search_record.cpp user_search_record.cpp]
+{{{
+void UserSearchRecord::setResultRating(int pos, const string &rating) {
+        if (rating.empty()) {
+                rated_results.erase(pos);
+        }
+        else {
+                rated_results[pos] = rating;
+        }
+}
+
+string UserSearchRecord::getResultRating(int pos) const {
+        map<int, string>::const_iterator itr = rated_results.find(pos);
+        if (itr != rated_results.end()) {
+                return itr->second;
+        }
+        return "";
+}
+
+bool UserSearchRecord::isRatingPositive(const string &rating) {
+        if (rating == "Y" || rating == "y") {
+                return true;
+        }
+        return false;
+}
+}}}
