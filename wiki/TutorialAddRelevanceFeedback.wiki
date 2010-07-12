@@ -107,7 +107,82 @@ function showRating(ratingElem, sendRating) {
 }
 }}}
 
-When "Y" is clicked, it is highlighted, "N" becomes hidden, "C" becomes visible, and we send an AJAX request to the server (`$.get`) using the url `/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=Y`.
+When "Y" is clicked, the following happens:
+ # rating inside the ".search_result_rating" element is set to "Y"
+ # "Y" is highlighted by setting the `rated' class
+ # "N" becomes hidden
+ # "C" becomes visible
+ # We send an AJAX request to the server (`$.get`) using the url `/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=Y`
+
+Similar things happen when "N" is clicked.
 
 `prepareRatings` is also called using page load:
+
 [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/basic_search.htm basic_search.htm]
+
+= Step 2: Record the relevance judgment at server side =
+
+Whenever we receive an AJAX request indicating a document is relevant or not, we need to store this relevance judgment for later use.
+
+First, we register a handler for the AJAX request:
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/basic_search_ui.cpp basic_search_ui.cpp]
+{{{
+getUCAIRServer().registerHandler(RequestHandler::CGI_OTHER, "/rate", bind(&BasicSearchUI::rateResult, this, _1, _2));
+}}}
+
+The handler type is `CGI_OTHER`. We use `CGI_HTML` for CGI handlers that dynamically generate HTML pages, and `CGI_OTHER` for other CGI handlers that do not generate HTML pages. Both types of handlers parse params from URL and POST data.
+
+The handler will invoke `BasicSearchUI::rateResult` whenever the request URL starts with `/rate`. The `Request` object is passed as the 1st arg, and the `Reply` object is passed as the 2nd arg.
+
+Now let's look at the handler itself.
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/basic_search_ui.cpp basic_search_ui.cpp]
+{{{
+void BasicSearchUI::rateResult(Request &request, Reply &reply){
+        User *user = getUserManager().getUser(request, true);
+        assert(user);
+
+        int result_pos = 0;
+        try{
+                string s = request.getFormData("pos");
+                if (! s.empty()){
+                        result_pos = lexical_cast<int>(s);
+                }
+        }
+        catch (bad_lexical_cast &){
+                getUCAIRServer().err(reply_status::bad_request);
+        }
+        string rating = request.getFormData("rating");
+
+        string search_id = request.getFormData("sid");
+        string view_id = request.getFormData("view");
+        const SearchResult *result = getSearchProxy().getResult(search_id, result_pos);
+        if (result){
+                // Adds an event of user explicitly rating the result.
+                shared_ptr<RateResultEvent> event(new RateResultEvent);
+                event->search_id = search_id;
+                event->result_pos = result_pos;
+                event->rating = rating;
+                user->addEvent(event);
+
+                UserSearchRecord *search_record = user->getSearchRecord(search_id);
+                if (search_record){
+                        search_record->setResultRating(result_pos, rating);
+                        // Mark all previous search results as viewed.
+                        const string property_name = "ranking_" + view_id;
+                        if (search_record->properties.has(property_name)){
+                                vector<int> &ranking = search_record->properties.get<vector<int> >(property_name);
+                                BOOST_FOREACH(const int &pos, ranking){
+                                        search_record->addViewedResult(pos);
+                                        if (pos == result_pos){
+                                                break;
+                                        }
+                                }
+                        }
+                }
+        }
+
+
+        // Empty reply
+        reply.setHeader("Content-Type", "text/plain");
+}
+}}}
