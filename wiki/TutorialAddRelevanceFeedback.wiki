@@ -108,3 +108,6 @@ function showRating(ratingElem, sendRating) {
 }}}
 
 When "Y" is clicked, it is highlighted, "N" becomes hidden, "C" becomes visible, and we send an AJAX request to the server (`$.get`) using the url `/rate?sid=${search_id}&amp;pos=${result_pos}&amp;view=${view_id}&amp;rating=Y`.
+
+`prepareRatings` is also called using page load:
+[http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/templates/basic_search.htm basic_search.htm]
