@@ -4,6 +4,12 @@
 
 This tutorial shows how to add support for (explicit) relevance feedback to UCAIR. Relevance feedback allows user to explicitly specify whether a document is relevant or not, and uses this information to help rerank the unjudged documents.
 
+Here are some screenshots of the finished relevance feedback functionality. You can notice that we allow users to give positive/negative feedbacks and they can be used to generate a feedback language model to rerank the search results accordingly. 
+
+http://ucair.googlecode.com/svn/wiki/rel_fb_demo_1.png
+
+http://ucair.googlecode.com/svn/wiki/rel_fb_demo_1.png
+
 = Step 1: UI for relevance judgment =
 
 In this step we'll change the HTML to display clickable links that can be used to provide relevance judgment. There is a "Y" link to indicate positive relevance, a "N" link to indicate negative relevance, and an initially hidden "C" link to cancel previous made relevance judgment:
@@ -481,7 +487,7 @@ The actual code to generate a search model is within the `getModel` method. We u
 
 We first concatenate all the search results with positive ratings into a pseudo document. Each `UserSearchRecord` maintains an index of all the retrieved search results. The index is of type `SimpleIndex`, which allows us to look all the term ids associated with a document id. The term counts in the pseudo documents are stored in a `map<int, double>` structure that maps term ids to term counts.
 
-The model-based feedback algorithm assumes the pseudo-document is a mixture of a feedback language model and a background language model, and the goal is to estimate the feedback model that gives maximum likelihood for generating the document. In the original paper it is done by EM, but here we use the faster algorithm given in [http://portal.acm.org/citation.cfm?id=1277948 Y. Zhang's paper]. For details please see the implementation of estimateMixture().
+The model-based feedback algorithm assumes the pseudo-document is a mixture of a feedback language model and a background language model, and the goal is to estimate the feedback model that gives maximum likelihood for generating the document. In the original paper it is done by EM, but here we use the faster algorithm given in [http://portal.acm.org/citation.cfm?id=1277948 Y. Zhang's paper]. For details please see the implementation of `estimateMixture()`. Note negative relevance feedback is still not supported. Interested readers can try implementing the algorithm in [http://portal.acm.org/citation.cfm?id=1390374 X Wang's paper].
 
 Finally we truncate the model to 20 terms max.
 
