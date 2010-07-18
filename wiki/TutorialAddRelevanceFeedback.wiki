@@ -262,7 +262,7 @@ type TEXT NOT NULL,
 value TEXT NOT NULL)
 }}}
 
-Following is the definition of the RateResultEvent class:
+Following is the definition of the `RateResultEvent` class:
 
 [http://code.google.com/p/ucair/source/diff?spec=svn22&r=22&format=side&path=/trunk/UCAIR09/user_event.h user_event.h]
 {{{
