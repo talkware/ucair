@@ -8,7 +8,7 @@ Here are some screenshots of the finished relevance feedback functionality. You 
 
 http://ucair.googlecode.com/svn/wiki/rel_fb_demo_1.png
 
-http://ucair.googlecode.com/svn/wiki/rel_fb_demo_1.png
+http://ucair.googlecode.com/svn/wiki/rel_fb_demo_2.png
 
 = Step 1: UI for relevance judgment =
 
