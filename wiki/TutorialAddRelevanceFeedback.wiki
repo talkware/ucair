@@ -472,3 +472,17 @@ SearchModel RelevanceFeedbackModelGen::getModel(const UserSearchRecord &search_r
         return model;
 }
 }}}
+
+As `RelevanceFeedbackModelGen` is a subclass of `SearchModelGen`, it needs to implement a few methods. First, we allow search models to be lazily evaluated, i.e., they are only generated when necessary. This is controlled by `isOutdated`, where we indicate the model needs to be regenerated only when there are new user ratings.
+
+The `isAdaptive` method indicates whether the search model is adaptive. For relevance feedback, it is obvious the search model is adaptive only after user has provided feedback.
+
+The actual code to generate a search model is within the `getModel` method. We use the language-modelling based feedback algorithm from [http://portal.acm.org/citation.cfm?id=502585.502654 this paper of C. Zhai].
+
+We first concatenate all the search results with positive ratings into a pseudo document. Each `UserSearchRecord` maintains an index of all the retrieved search results. The index is of type `SimpleIndex`, which allows us to look all the term ids associated with a document id. The term counts in the pseudo documents are stored in a `map<int, double>` structure that maps term ids to term counts.
+
+The model-based feedback algorithm assumes the pseudo-document is a mixture of a feedback language model and a background language model, and the goal is to estimate the feedback model that gives maximum likelihood for generating the document. In the original paper it is done by EM, but here we use the faster algorithm given in [http://portal.acm.org/citation.cfm?id=1277948 Y. Zhang's paper]. For details please see the implementation of estimateMixture().
+
+Finally we truncate the model to 20 terms max.
+
+UCAIR allows you to choose a search model from a drop down box, and then click the "Rerank" button to see the effects of the relevance feedback model. So we don't need to do anything more here. That's it.
