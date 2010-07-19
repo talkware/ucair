@@ -485,7 +485,9 @@ The `isAdaptive` method indicates whether the search model is adaptive. For rele
 
 The actual code to generate a search model is within the `getModel` method. We use the language-modelling based feedback algorithm from [http://portal.acm.org/citation.cfm?id=502585.502654 this paper of C. Zhai].
 
-We first concatenate all the search results with positive ratings into a pseudo document. Each `UserSearchRecord` maintains an index of all the retrieved search results. The index is of type `SimpleIndex`, which allows us to look all the term ids associated with a document id. The term counts in the pseudo documents are stored in a `map<int, double>` structure that maps term ids to term counts.
+We first concatenate all the search results with positive ratings into a pseudo document. Each `UserSearchRecord` maintains an index of all the retrieved search results. The index is of type `SimpleIndex`, which allows us to look all the term ids associated with a document id. `SimpleIndex` is a very simple custom-built inverted index that resides in memory (without a disk backup, so never persisted). It supports the indexing of language models and sufficient for the small amount of search log data that needs to be indexed.
+
+The term counts in the pseudo documents are stored in a `map<int, double>` structure that maps term ids to term counts.
 
 The model-based feedback algorithm assumes the pseudo-document is a mixture of a feedback language model and a background language model, and the goal is to estimate the feedback model that gives maximum likelihood for generating the document. In the original paper it is done by EM, but here we use the faster algorithm given in [http://portal.acm.org/citation.cfm?id=1277948 Y. Zhang's paper]. For details please see the implementation of `estimateMixture()`. Note negative relevance feedback is still not supported. Interested readers can try implementing the algorithm in [http://portal.acm.org/citation.cfm?id=1390374 X Wang's paper].
 
