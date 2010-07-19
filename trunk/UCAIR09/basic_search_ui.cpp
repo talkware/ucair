@@ -19,7 +19,6 @@
 using namespace std;
 using namespace boost;
 using namespace templating;
-using xml::util::quote;
 
 namespace ucair {
 
@@ -90,9 +89,9 @@ void BasicSearchUI::useExternalSearchEngine(Request &request, Reply &reply){
 	string search_engine_id = request.getFormData("seng");
 	try {
 		TemplateData t_main;
-		t_main.set("query", quote(query))
-			.set("encoded_query", quote(encoded_query))
-			.set("search_engine_id", quote(search_engine_id));
+		t_main.set("query", query)
+			.set("encoded_query", encoded_query)
+			.set("search_engine_id", search_engine_id);
 
 		string search_engine_name;
 		string search_page_link;
