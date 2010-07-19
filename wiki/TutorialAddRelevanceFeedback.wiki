@@ -25,7 +25,7 @@ In this step we'll change the HTML to display clickable links that can be used t
 
 I use a hidden `span.search_result_rating` element to hold the current rating, and a hidden `span.search_result_rating_url` element to hold the url for rating submission.
 
-Note the use of template variables such as ${search_id} and ${result_pos}. These are replaced by actual values when the HTML pages are rendered. I have written a custom C++ based template engine ([http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.h template_engine.h] [http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.cpp .cpp]) that provides somewhat comparable functionality as JSP/PHP. 
+Note the use of template variables such as ${search_id} and ${result_pos}. These are replaced by actual values when the HTML pages are rendered. I have written [http://code.google.com/p/ucair/wiki/CPPTemplateEngine a custom C++ based template engine] that provides somewhat comparable functionality as JSP/PHP. 
 
 Following is associated CSS:
 
