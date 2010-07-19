@@ -44,7 +44,7 @@ The enclosed content will be output only if the test returns true for the variab
  * `exist`: returns true if the variable exists (passed in) during run time. The `value=` section can be omitted.
  * `nexist`: opposite of `exist`
  * `empty`: return true if the variable does not exist or is an empty string. The `value=` section can be omitted.
- * `nempty`: opposite of empty
+ * `nempty`: opposite of `empty`
 
 === Switch Clause ===
 
@@ -112,7 +112,7 @@ So if the template is like this
 <title>${query}</title>
 <body>
   <template:foreach name="result">
-    <p><a href="${url}">${title}</a></p>
+    <p><a href="${url}">${title}</a>
     ${language}</p>
   </template:foreach>
 </body>
@@ -125,9 +125,9 @@ The results will be
 <html>
 <title>Amazon</title>
 <body>
-    <p><a href="www.amazon.com">Amazon.com</a></p>
+    <p><a href="www.amazon.com">Amazon.com</a>
     English</p>
-    <p><a href="www.amazon.cn">Amazon.cn</a></p>
+    <p><a href="www.amazon.cn">Amazon.cn</a>
     Chinese</p>
 </body>
 </html>
@@ -137,3 +137,36 @@ Observations:
  * The variables are all replaced by the values in the data mappings.
  * Because the top level node has two child nodes named "result", the `foreach` subtemplate are repeated twice, being applied to each child node.
  * In the first child node, "language" is inherited from the parent, while in the second child node, "language" is defined in its own mapping.
+
+= C++ API =
+
+[http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.h template_engine.h] [http://code.google.com/p/ucair/source/browse/trunk/UCAIR09/template_engine.cpp template_engine.cpp]
+
+{{{
+class TemplateData:
+TemplateData& set(const std::string &name, const std::string &value, bool xml_escape = true);
+bool get(const std::string &name, std::string &value) const;
+TemplateData addChild(const std::string &name);
+
+class TemplateEngine:
+TemplateEngine(const std::string &source_dir = "", bool detect_changes = true);
+std::string render(const TemplateData &data, const std::string &source_file_name);
+
+global function:
+TemplateEngine& getTemplateEngine();
+}}}
+
+Notes:
+ * Both `TemplateData::set` and `addChild` returns a `TemplateData` object (or self-reference), so you can chain operations.
+ * `TemplateData::set` does XML entity escaping by default
+ * `TemplateEngine`'s constructor has options to detect changes in the template file. Thus you can change the template and observe the effect without restarting the program.
+ * You can get the `TemplateEngine` singleton using `getTemplateEngine`
+
+To render the above example, the code is
+{{{
+TemplateData t_main;
+t_main.set("query", "Amazon").set("language", "English");
+t_main.addChild("result").set("title", "Amazon.com").set("url", "www.amazon.com");
+t_main.addChild("result").set("title", "Amazon.cn").set("url", "www.amazon.cn").set("lanauge", "Chinese");
+string rendered_html = getTemplateEngine().render(t_main, "example_template_file.htm");
+}}}
