@@ -114,8 +114,7 @@ std::string getDateStr(const boost::posix_time::ptime &t, bool useYesterdayToday
 std::string getTimeStr(const boost::posix_time::ptime &t);
 
 /*! \brief Returns the directory in which to store program data.
- *  If the config value program_data_dir is empty,
- *  it will be %ALLUSERSPROFILE% on Windows.
+ *  This is specified in the config entry "program_data_dir".
  */
 std::string getProgramDataDir();
 
