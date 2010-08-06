@@ -36,6 +36,7 @@ Source: config.ini; DestDir: {app}; Flags: ignoreversion
 Source: default_pref.ini; DestDir: {app}; Flags: ignoreversion
 ; NOTE: Don't use "Flags: ignoreversion" on any shared system files
 Source: RunningOnWindows.URL; DestDir: {app}; Flags: ignoreversion
+Source: default_pref.ini; DestDir: {commonappdata}\UCAIR\profiles; Flags: recursesubdirs ignoreversion
 
 [Icons]
 Name: {group}\UCAIR; Filename: {app}\UCAIR09.exe; WorkingDir: {app}

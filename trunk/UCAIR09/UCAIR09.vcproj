@@ -63,7 +63,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="mxmld.lib sqlite3d.lib libboost_thread-vc90-mt-gd-1_42.lib libboost_system-vc90-mt-gd-1_42.lib libboost_program_options-vc90-mt-gd-1_42.lib libboost_regex-vc90-mt-gd-1_42.lib libboost_filesystem-vc90-mt-gd-1_42.lib libboost_signals-vc90-mt-gd-1_42.lib"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\sqlite3\lib&quot;;&quot;C:\Program Files\MXML\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_42\lib&quot;"
-				UACExecutionLevel="2"
+				UACExecutionLevel="0"
 				GenerateDebugInformation="true"
 				TargetMachine="1"
 			/>
@@ -137,7 +137,7 @@
 				Name="VCLinkerTool"
 				AdditionalDependencies="mxml.lib sqlite3.lib libboost_thread-vc90-mt-1_42.lib libboost_system-vc90-mt-1_42.lib libboost_program_options-vc90-mt-1_42.lib libboost_regex-vc90-mt-1_42.lib libboost_filesystem-vc90-mt-1_42.lib libboost_signals-vc90-mt-1_42.lib"
 				AdditionalLibraryDirectories="&quot;C:\Program Files\sqlite3\lib&quot;;&quot;C:\Program Files\MXML\lib&quot;;&quot;C:\Program Files (x86)\boost\boost_1_42\lib&quot;"
-				UACExecutionLevel="2"
+				UACExecutionLevel="0"
 				GenerateDebugInformation="true"
 				SubSystem="0"
 				OptimizeReferences="2"

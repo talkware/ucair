@@ -1,5 +1,6 @@
 #include "logger.h"
 #include <boost/date_time/posix_time/posix_time.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/format.hpp>
 #include <boost/algorithm/string.hpp>
 #include "common_util.h"
@@ -8,11 +9,14 @@
 
 using namespace std;
 using namespace boost;
+namespace fs = boost::filesystem;
 
 namespace ucair {
 
 bool Logger::initialize() {
-	string log_file_name = util::getParam<string>(Main::instance().getConfig(), "log_file");
+	fs::path path(ucair::getProgramDataDir());
+	path /= "log";
+	string log_file_name = path.string();
 	fout.open(log_file_name.c_str(), ios::out | ios::app);
 	if (! fout) {
 		return false;

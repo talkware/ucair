@@ -96,7 +96,7 @@ void toString(const std::vector<std::pair<std::string, double> > &l, std::string
  */
 void fromString(const std::string &s, std::vector<std::pair<std::string, double> > &l);
 
-/*! Transforms the original url into a string suitable for display.
+/*! \brief Transforms the original url into a string suitable for display.
  *
  *  Removes the protocol part and truncate the string if the size exceeds max limit.
  */
@@ -112,6 +112,12 @@ double getCosSim(const std::map<int, double> &a, const std::map<int, double> &b)
 std::string getDateStr(const boost::posix_time::ptime &t, bool useYesterdayToday = false);
 /// Returns the time part of a ptime as string.
 std::string getTimeStr(const boost::posix_time::ptime &t);
+
+/*! \brief Returns the directory in which to store program data.
+ *  If the config value program_data_dir is empty,
+ *  it will be %ALLUSERSPROFILE% on Windows.
+ */
+std::string getProgramDataDir();
 
 } // namespace ucair
 

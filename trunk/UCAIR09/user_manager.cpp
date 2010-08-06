@@ -19,8 +19,12 @@ namespace fs = boost::filesystem;
 namespace ucair {
 
 bool UserManager::initialize(){
+	fs::path path(ucair::getProgramDataDir());
+	path /= "profiles";
+	profiles_dir = path.string();
+	getLogger().info("Profiles dir: " + profiles_dir);
+
 	Main& main = Main::instance();
-	profiles_dir = util::getParam<string>(main.getConfig(), "profiles_dir");
 	default_user_id = util::getParam<string>(main.getConfig(), "default_user");
 
 	util::PrototypedFactory::registerPrototype(ClickResultEvent::type, shared_ptr<ClickResultEvent>(new ClickResultEvent));
