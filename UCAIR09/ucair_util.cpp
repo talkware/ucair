@@ -265,16 +265,7 @@ string getTimeStr(const posix_time::ptime &t) {
 
 string getProgramDataDir() {
 	Main& main = Main::instance();
-	string s = util::getParam<string>(main.getConfig(), "program_data_dir");
-	if (s.empty()) {
-		const char *p = getenv("ALLUSERSPROFILE");
-		if (p) {
-			filesystem::path path(p);
-			path /= "UCAIR";
-			s = path.string();
-		}
-	}
-	return s;
+	return util::getParam<string>(main.getConfig(), "program_data_dir");
 }
 
 } // namespace ucair
