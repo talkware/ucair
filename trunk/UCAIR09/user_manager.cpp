@@ -169,7 +169,7 @@ User* UserManager::getUser(const Request &request, bool log_on_automatically) {
 void UserManager::createUserFiles(const string &user_id) const {
 	fs::path profile_path(getProfileDir(user_id));
 	if (! fs::exists(profile_path)) {
-		fs::create_directory(profile_path);
+		fs::create_directories(profile_path);
 	}
 	fs::path pref_path = profile_path / "pref.ini";
 	if (! fs::exists(pref_path)) {
