@@ -4,11 +4,14 @@
 #include <iomanip>
 #include <sstream>
 #include <boost/lexical_cast.hpp>
+#include <boost/filesystem.hpp>
 #include <boost/foreach.hpp>
 #include <boost/format.hpp>
 #include <boost/tuple/tuple.hpp>
 #include "common_util.h"
+#include "config.h"
 #include "index_util.h"
+#include "main.h"
 #include "search_engine.h"
 #include "simple_index.h"
 
@@ -258,6 +261,20 @@ string getDateStr(const posix_time::ptime &t, bool useYesterdayToday) {
 
 string getTimeStr(const posix_time::ptime &t) {
 	return util::timeToString(t, "%I:%M %p");
+}
+
+string getProgramDataDir() {
+	Main& main = Main::instance();
+	string s = util::getParam<string>(main.getConfig(), "program_data_dir");
+	if (s.empty()) {
+		const char *p = getenv("ALLUSERSPROFILE");
+		if (p) {
+			filesystem::path path(p);
+			path /= "UCAIR";
+			s = path.string();
+		}
+	}
+	return s;
 }
 
 } // namespace ucair
