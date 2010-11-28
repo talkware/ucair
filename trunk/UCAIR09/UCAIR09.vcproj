@@ -42,7 +42,7 @@
 				AdditionalOptions="-D_SCL_SECURE_NO_WARNINGS"
 				Optimization="0"
 				AdditionalIncludeDirectories="&quot;C:\Program Files\sqlite3\include&quot;;&quot;C:\Program Files\MXML\include&quot;;&quot;C:\Program Files (x86)\boost\boost_1_42&quot;"
-				PreprocessorDefinitions="_WIN32_WINNT=0x0501;WIN32;DEBUG"
+				PreprocessorDefinitions="_WIN32_WINNT=0x0501;WIN32;DEBUG;_HAS_CPP0X=0"
 				MinimalRebuild="true"
 				BasicRuntimeChecks="3"
 				RuntimeLibrary="3"
