@@ -32,8 +32,6 @@ LongTermSearchModelGen::LongTermSearchModelGen(const string &model_name,
 }
 
 SearchModel LongTermSearchModelGen::getModel(const UserSearchRecord &search_record, const Search &search) const {
-	SearchModel result(generateModelName(), generateModelDescription());
-
 	User *user = getUserManager().getUser(search_record.getUserId());
 	assert(user);
 
@@ -59,6 +57,9 @@ SearchModel LongTermSearchModelGen::getModel(const UserSearchRecord &search_reco
 			}
 		}
 	}
+
+	bool isAdaptive = ! neighbor_search_ids.empty();
+	SearchModel result(generateModelName(), generateModelDescription(), isAdaptive);
 
 	vector<int> term_ids(pseudo_feedback_model.size());
 	vector<double> term_counts(term_ids.size());
