@@ -141,7 +141,7 @@ void User::updateSearchIndices(bool force_update) {
 		const string &search_id = p.first;
 		const UserSearchRecord &search_record = p.second;
 		const Search *search = getSearchProxy().getSearch(search_id);
-		map<int, double> model = getSearchModelManager().getModel(search_record, *search, "short-term").probs;
+		map<int, double> model = getSearchModelManager().getModel(search_record, *search, "single-search").probs;
 		if (! isSearchExpired(search_id)) {
 			// Search model may change in the future.
 			short_term_search_index->addDoc(search_id, *indexing::ValueMap::from(model));
@@ -272,9 +272,18 @@ set<string> User::getTimeBasedSession(const std::string &this_search_id) const {
 }
 
 void User::updateSession(const std::string &this_search_id) {
+	const Search* this_search = getSearch(this_search_id);
+	assert(this_search);
 	UserSearchRecord *this_search_record = getSearchRecord(this_search_id);
 	assert(this_search_record);
-	map<int, double> this_model = getIndexedSearchModel(this_search_id);
+	map<int, double> this_model;
+	if (this_search_record->getClickedResults().empty()) {
+		// Use pseudo feedback to expand query if there is no click.
+		this_model = getSearchModelManager().getModel(*this_search_record, *this_search, "pseudo").probs;
+	}
+	if (this_model.empty()) {
+		this_model = getIndexedSearchModel(this_search_id);
+	}
 
 	set<string> old_session_ids;
 	old_session_ids.insert(this_search_record->getSessionId());

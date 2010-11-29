@@ -455,7 +455,7 @@ void SearchSaveTask::saveModel(sqlite::Connection &conn, bool final_call) {
 
 	getLogger().info("Saving model for search " + search_id);
 
-	map<int, double> model_with_term_id = getSearchModelManager().getModel(*search_record, *search, "short-term").probs;
+	map<int, double> model_with_term_id = getSearchModelManager().getModel(*search_record, *search, "single-search").probs;
 	vector<pair<string, double> > model_with_term_str;
 	id2Name(*indexing::ValueMap::from(model_with_term_id), model_with_term_str, getIndexManager().getTermDict());
 	string model_str;
