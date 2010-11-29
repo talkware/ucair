@@ -10,11 +10,11 @@ SearchEngineRepeater::SearchEngineRepeater(const shared_ptr<SearchEngine> &base_
 }
 
 string SearchEngineRepeater::getSearchEngineId() const {
-	return base_search_engine->getSearchEngineId() + "_r";
+	return base_search_engine->getSearchEngineId() + "2";
 }
 
 string SearchEngineRepeater::getSearchEngineName() const {
-	return base_search_engine->getSearchEngineName() + "_r";
+	return base_search_engine->getSearchEngineName() + "2";
 }
 
 bool SearchEngineRepeater::fetchResults(Search &search, int &start_pos, int &result_count) {
