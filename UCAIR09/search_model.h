@@ -75,7 +75,8 @@ public:
 			const std::string &model_description,
 			double query_term_weight,
 			double clicked_result_term_weight,
-			double unclicked_result_term_weight);
+			double unclicked_result_term_weight,
+			bool use_pseudo_feedback);
 
 	bool isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const;
 
@@ -86,6 +87,7 @@ protected:
 	double query_term_weight; ///< weight on query terms
 	double clicked_result_term_weight; ///< weight on terms in clicked results
 	double unclicked_result_term_weight;  ///< weight on terms in unclicked results
+	bool use_pseudo_feedback;
 };
 
 /// Generates search models using Rocchio feedback.
@@ -95,7 +97,8 @@ public:
 			const std::string &model_description,
 			double query_term_weight,
 			double clicked_result_term_weight,
-			double unclicked_result_term_weight);
+			double unclicked_result_term_weight,
+			bool use_pseudo_feedback);
 
 	SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const;
 };
@@ -108,7 +111,8 @@ public:
 			double query_term_weight,
 			double clicked_result_term_weight,
 			double unclicked_result_term_weight,
-			double bg_coeff);
+			double bg_coeff,
+			bool use_pseudo_feedback);
 
 	SearchModel getModel(const UserSearchRecord &search_record, const Search &search) const;
 
@@ -149,8 +153,8 @@ public:
 	bool initialize();
 
 private:
-	/// map from search model name to search model generators
-	std::map<std::string, boost::shared_ptr<SearchModelGen> > model_gens;
+	/// list of search model generators
+	std::list< boost::shared_ptr<SearchModelGen> > model_gens;
 	/// map from pair of (search id, search model name) to cached search models
 	std::map<std::pair<std::string, std::string>, SearchModel> cached_models;
 };

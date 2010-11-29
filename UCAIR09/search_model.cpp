@@ -42,11 +42,12 @@ SearchModel QueryMLEModelGen::getModel(const UserSearchRecord &search_record, co
 
 ////////////////////////////////////////////////////////////////////////////////
 
-WeightedClickModelGen::WeightedClickModelGen(const string &model_name, const string &model_description, double query_term_weight_, double clicked_result_term_weight_, double unclicked_result_term_weight_) :
+WeightedClickModelGen::WeightedClickModelGen(const string &model_name, const string &model_description, double query_term_weight_, double clicked_result_term_weight_, double unclicked_result_term_weight_, bool use_pseudo_feedback_) :
 	SearchModelGen(model_name, model_description),
 	query_term_weight(query_term_weight_),
 	clicked_result_term_weight(clicked_result_term_weight_),
-	unclicked_result_term_weight(unclicked_result_term_weight_) {}
+	unclicked_result_term_weight(unclicked_result_term_weight_),
+	use_pseudo_feedback(use_pseudo_feedback_) {}
 
 bool WeightedClickModelGen::isOutdated(const UserSearchRecord &search_record, const SearchModel &search_model) const {
 	BOOST_FOREACH(const shared_ptr<UserEvent> &event, search_record.getEvents()) {
@@ -74,28 +75,30 @@ void WeightedClickModelGen::countTermsWeighted(const UserSearchRecord &search_re
 		}
 	}
 
-	indexing::SimpleIndex *index = search_record.getIndex();
-	if (index) {
-		const util::UniqueList &clicks = search_record.getClickedResults();
-		const util::UniqueList::nth_index<1>::type &click_set = clicks.get<1>();
+	if (! search_record.getClickedResults().empty() || use_pseudo_feedback) {
+		indexing::SimpleIndex *index = search_record.getIndex();
+		if (index) {
+			const util::UniqueList &clicks = search_record.getClickedResults();
+			const util::UniqueList::nth_index<1>::type &click_set = clicks.get<1>();
 
-		typedef pair<int, SearchResult> P1;
-		BOOST_FOREACH(const P1 &p1, search.results) {
-			int result_pos = p1.first;
-			bool clicked = click_set.find(result_pos) != click_set.end();
-			string doc_name = buildDocName(search_record.getSearchId(), result_pos);
-			int doc_id = index->getDocDict().getId(doc_name);
-			if (doc_id > 0) {
-				const vector<pair<int, float> >* term_list = index->getTermList(doc_id);
-				if (term_list) {
-					typedef pair<int, float> P2;
-					BOOST_FOREACH(const P2 &p2, *term_list) {
-						int term_id = p2.first;
-						double term_weight = p2.second * (clicked ? clicked_result_term_weight : unclicked_result_term_weight);
-						if (term_weight > 0.0) {
-							map<int, double>::iterator itr;
-							tie(itr, tuples::ignore) = term_counts.insert(make_pair(term_id, 0.0));
-							itr->second += term_weight;
+			typedef pair<int, SearchResult> P1;
+			BOOST_FOREACH(const P1 &p1, search.results) {
+				int result_pos = p1.first;
+				bool clicked = click_set.find(result_pos) != click_set.end();
+				string doc_name = buildDocName(search_record.getSearchId(), result_pos);
+				int doc_id = index->getDocDict().getId(doc_name);
+				if (doc_id > 0) {
+					const vector<pair<int, float> >* term_list = index->getTermList(doc_id);
+					if (term_list) {
+						typedef pair<int, float> P2;
+						BOOST_FOREACH(const P2 &p2, *term_list) {
+							int term_id = p2.first;
+							double term_weight = p2.second * (clicked ? clicked_result_term_weight : unclicked_result_term_weight);
+							if (term_weight > 0.0) {
+								map<int, double>::iterator itr;
+								tie(itr, tuples::ignore) = term_counts.insert(make_pair(term_id, 0.0));
+								itr->second += term_weight;
+							}
 						}
 					}
 				}
@@ -110,8 +113,9 @@ RocchioModelGen::RocchioModelGen(const string &model_name,
 		const string &model_description,
 		double query_term_weight,
 		double clicked_result_term_weight,
-		double unclicked_result_term_weight) :
-		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight) {
+		double unclicked_result_term_weight,
+		bool use_pseudo_feedback) :
+		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight, use_pseudo_feedback) {
 }
 
 SearchModel RocchioModelGen::getModel(const UserSearchRecord &search_record, const Search &search) const {
@@ -129,8 +133,9 @@ MixtureModelGen::MixtureModelGen(const string &model_name,
 		double query_term_weight,
 		double clicked_result_term_weight,
 		double unclicked_result_term_weight,
-		double bg_coeff_) :
-		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight),
+		double bg_coeff_,
+		bool use_pseudo_feedback) :
+		WeightedClickModelGen(model_name, model_description, query_term_weight, clicked_result_term_weight, unclicked_result_term_weight, use_pseudo_feedback),
 		bg_coeff(bg_coeff_) {
 }
 
@@ -235,25 +240,22 @@ SearchModel RelevanceFeedbackModelGen::getModel(const UserSearchRecord &search_r
 ////////////////////////////////////////////////////////////////////////////////
 
 void SearchModelManager::addModelGen(const shared_ptr<SearchModelGen> &model_gen) {
-	map<string, shared_ptr<SearchModelGen> >::iterator itr;
-	bool inserted;
-	tie(itr, inserted) = model_gens.insert(make_pair(model_gen->generateModelName(), model_gen));
-	itr->second = model_gen;
+	model_gens.push_back(model_gen);
 }
 
 SearchModelGen* SearchModelManager::getModelGen(const string &model_name) const {
-	map<string, shared_ptr<SearchModelGen> >::const_iterator itr = model_gens.find(model_name);
-	if (itr != model_gens.end()) {
-		return itr->second.get();
+	BOOST_FOREACH(const shared_ptr<SearchModelGen> &model_gen, model_gens) {
+		if (model_gen->generateModelName() == model_name) {
+			return model_gen.get();
+		}
 	}
 	return NULL;
 }
 
 list<string> SearchModelManager::getAllModelGens() const {
 	list<string> names;
-	typedef pair<string, shared_ptr<SearchModelGen> > P;
-	BOOST_FOREACH(const P& p, model_gens) {
-		names.push_back(p.first);
+	BOOST_FOREACH(const shared_ptr<SearchModelGen> &model_gen, model_gens) {
+		names.push_back(model_gen->generateModelName());
 	}
 	return names;
 }
@@ -282,41 +284,63 @@ bool SearchModelManager::initialize(){
 	double long_term_search_model_background_prior = util::getParam<double>(main.getConfig(), "long_term_search_model_background_prior");
 	int long_term_search_model_max_em_tries = util::getParam<int>(main.getConfig(), "long_term_search_model_max_em_tries");
 	int long_term_search_model_max_em_iterations = util::getParam<int>(main.getConfig(), "long_term_search_model_max_em_iterations");
+	double long_term_search_model_click_prior = util::getParam<double>(main.getConfig(), "long_term_search_model_click_prior");
 
 	shared_ptr<QueryMLEModelGen> query(new QueryMLEModelGen("query", "Query MLE"));
 	getSearchModelManager().addModelGen(query);
 
 	shared_ptr<MixtureModelGen> pseudo(new MixtureModelGen(
 			"pseudo",
-			"Pseudo feedback",
+			"pseudo feedback",
 			query_term_weight,
 			0.0,
 			unclicked_result_term_weight,
-			bg_coeff));
+			bg_coeff,
+			true));
 	getSearchModelManager().addModelGen(pseudo);
 
-	shared_ptr<MixtureModelGen> short_term(new MixtureModelGen("short-term",
-			"Short-term implicit feedback",
+	shared_ptr<RelevanceFeedbackModelGen> explicit_feedback(new RelevanceFeedbackModelGen("explicit",
+			"explicit feedback",
+			bg_coeff));
+	getSearchModelManager().addModelGen(explicit_feedback);
+
+	shared_ptr<MixtureModelGen> single_search(new MixtureModelGen("single-search",
+			"implicit feedback (single search)",
 			query_term_weight,
 			clicked_result_term_weight,
 			unclicked_result_term_weight,
-			bg_coeff));
-	getSearchModelManager().addModelGen(short_term);
+			bg_coeff,
+			false));
+	getSearchModelManager().addModelGen(single_search);
 
-	shared_ptr<LongTermSearchModelGen> long_term(new LongTermSearchModelGen("long-term",
-			"Long-term implicit feedback",
+	shared_ptr<LongTermSearchModelGen> session(new LongTermSearchModelGen("session",
+			"implicit feedback (session)",
 			long_term_search_model_min_cos_sim,
 			long_term_search_model_max_neighbors,
 			long_term_search_model_query_prior,
 			long_term_search_model_background_prior,
 			long_term_search_model_max_em_tries,
-			long_term_search_model_max_em_iterations));
-	getSearchModelManager().addModelGen(long_term);
+			long_term_search_model_max_em_iterations,
+			true));
 
-	shared_ptr<RelevanceFeedbackModelGen> short_term_explicit(new RelevanceFeedbackModelGen("short-term-explicit",
-			"Short-term explicit feedback",
-			bg_coeff));
-	getSearchModelManager().addModelGen(short_term_explicit);
+	shared_ptr<LongTermShortTermSearchModelGen> session_with_short_term(new LongTermShortTermSearchModelGen(
+			"session", "implicit feedback (session)", session, single_search, long_term_search_model_click_prior));
+	getSearchModelManager().addModelGen(session_with_short_term);
+
+	shared_ptr<LongTermSearchModelGen> long_term_history(new LongTermSearchModelGen("long-term-history",
+			"implicit feedback (long-term history)",
+			long_term_search_model_min_cos_sim,
+			long_term_search_model_max_neighbors,
+			long_term_search_model_query_prior,
+			long_term_search_model_background_prior,
+			long_term_search_model_max_em_tries,
+			long_term_search_model_max_em_iterations,
+			false));
+
+	shared_ptr<LongTermShortTermSearchModelGen> long_term_history_with_short_term(new LongTermShortTermSearchModelGen(
+			"long-term-history", "implicit feedback (long-term-history)", long_term_history, single_search, long_term_search_model_click_prior));
+	getSearchModelManager().addModelGen(long_term_history_with_short_term);
+
 	return true;
 }
 

@@ -178,7 +178,7 @@ void LogImporter::addClickResultEvent(time_t timestamp, int pos, const string &u
 }
 
 void LogImporter::computeModel() {
-	SearchModelGen *model_gen = getSearchModelManager().getModelGen("short-term");
+	SearchModelGen *model_gen = getSearchModelManager().getModelGen("single-search");
 	assert(model_gen);
 	model = model_gen->getModel(*search_record, *search).probs;
 }
