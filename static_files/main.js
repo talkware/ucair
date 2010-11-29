@@ -106,3 +106,9 @@ function prepareRatings() {
 		});
 	});
 }
+
+function prepareWidgets() {
+	$("#force_session_end").click(function() {
+		$.get("/force_session_end");
+	});
+}

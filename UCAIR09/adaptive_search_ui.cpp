@@ -7,6 +7,7 @@
 #include "session_widget.h"
 #include "ucair_server.h"
 #include "ucair_util.h"
+#include "user_manager.h"
 
 using namespace std;
 using namespace boost;
@@ -35,7 +36,15 @@ bool AdaptiveSearchUI::initialize(){
 	adaptive_search_view->addChildModule(session_widget);
 	getPageModuleManager().getPageModule("base")->addChildModule(session_widget);
 
+	getUCAIRServer().registerHandler(RequestHandler::CGI_OTHER, "/force_session_end", bind(&AdaptiveSearchUI::forceSessionEnd, this, _1, _2));
+
 	return true;
+}
+
+void AdaptiveSearchUI::forceSessionEnd(Request &request, Reply &reply) {
+	User *user= getUserManager().getUser(request, false);
+	assert(user);
+	user->forceSessionEnd();
 }
 
 } // namespace ucair

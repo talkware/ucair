@@ -113,6 +113,10 @@ public:
 	/// Returns name-value pairs from user config file.
 	std::map<std::string, std::string>& getConfig() { return config; }
 
+	/// Manually force session to end.
+	void forceSessionEnd();
+	time_t getForcedSessionEndTime() const { return forced_session_end_time; }
+
 private:
 
 	std::string user_id;
@@ -128,6 +132,8 @@ private:
 	// long_term_search_index includes long-term searches and inactive short-term searches.
 	boost::shared_ptr<indexing::SimpleIndex> long_term_search_index;
 	bool index_outdated;
+
+	time_t forced_session_end_time;
 
 	std::string last_viewed_doc_stream_id;
 
