@@ -29,6 +29,7 @@ $(document).ready(function() {
 		refreshOldPage(searchId, ${timestamp});
 		reloadScrollPos(pageId, $("#center_pane"));
 	}	
+	prepareWidgets();
 	showHideWidgets();
 	$(".search_result_title > a").mousedown(function(){
 		$(this).attr('href', $(this).prev().text());	

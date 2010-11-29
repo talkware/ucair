@@ -214,6 +214,10 @@ string User::getShortTermLastSearchId() const {
 	return "";
 }
 
+void User::forceSessionEnd() {
+	forced_session_end_time = time(NULL);
+}
+
 set<string> User::getSession(const std::string &session_id) const {
 	// Session id equals the search id of the first search in the session.
 	const UserSearchRecord *search_record = getSearchRecord(session_id);
@@ -251,6 +255,9 @@ set<string> User::getTimeBasedSession(const std::string &this_search_id) const {
 		 if (! search_record) {
 			 break;
 		 }
+		 if (search_record->getCreationTime() > forced_session_end_time && forced_session_end_time > this_search_record->getCreationTime()) {
+			 break;
+		 }
 		 if (search_record->getCreationTime() - this_search_record->getLastEventTime() > session_expiration_time) {
 			 break;
 		 }
@@ -261,6 +268,9 @@ set<string> User::getTimeBasedSession(const std::string &this_search_id) const {
 	while (true) {
 		 search_record = search_record->getPrevSearchRecord();
 		 if (! search_record) {
+			 break;
+		 }
+		 if (this_search_record->getCreationTime() > forced_session_end_time && forced_session_end_time > search_record->getCreationTime()) {
 			 break;
 		 }
 		 if (this_search_record->getCreationTime() - search_record->getLastEventTime() > session_expiration_time) {
@@ -294,6 +304,9 @@ void User::updateSession(const std::string &this_search_id) {
 		if (! search_record) {
 			break;
 		}
+		if (search_record->getCreationTime() > forced_session_end_time && forced_session_end_time > this_search_record->getCreationTime()) {
+			break;
+		}
 		if (search_record->getCreationTime() - this_search_record->getCreationTime() > session_expiration_time) {
 			break;
 		}
@@ -313,6 +326,9 @@ void User::updateSession(const std::string &this_search_id) {
 		}
 		search_record = search_record->getPrevSearchRecord();
 		if (! search_record) {
+			break;
+		}
+		if (this_search_record->getCreationTime() > forced_session_end_time && forced_session_end_time > search_record->getCreationTime()) {
 			break;
 		}
 		if (this_search_record->getCreationTime() - search_record->getCreationTime() > session_expiration_time) {
