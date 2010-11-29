@@ -587,6 +587,14 @@
 				>
 			</File>
 			<File
+				RelativePath=".\search_engine_repeater.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\search_engine_repeater.h"
+				>
+			</File>
+			<File
 				RelativePath=".\yahoo_boss_api.cpp"
 				>
 			</File>

@@ -54,6 +54,8 @@ public:
 
 private:
 	std::list<std::string> search_view_ids;
+	int first_page_fetch_result_count; ///< Number of results to fetch when you start a search
+	int next_pages_fetch_result_count; ///< Number of results to fetch when you click "Next"
 };
 
 DECLARE_GET_COMPONENT(BasicSearchUI)

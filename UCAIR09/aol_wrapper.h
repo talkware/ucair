@@ -12,7 +12,7 @@ public:
 
 	std::string getSearchEngineId() const { return "aol"; }
 	std::string getSearchEngineName() const { return "AOL"; }
-	bool fetchResults(Search &search, int start_pos, int result_count);
+	bool fetchResults(Search &search, int &start_pos, int &result_count);
 	int maxAllowedResultCount() const { return 20; }
 
 	/*! \brief Builds a URL for a search page.

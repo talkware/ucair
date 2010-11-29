@@ -3,11 +3,13 @@
 #include <iostream>
 #include <boost/bind.hpp>
 #include <boost/foreach.hpp>
+#include <boost/format.hpp>
 #include <boost/thread.hpp>
 #include "aol_wrapper.h"
 #include "common_util.h"
 #include "config.h"
 #include "logger.h"
+#include "search_engine_repeater.h"
 #include "ucair_util.h"
 #include "user.h"
 #include "yahoo_boss_api.h"
@@ -35,8 +37,12 @@ list<SearchEngine*> SearchProxy::getAllSearchEngines() const {
 }
 
 bool SearchProxy::initialize(){
-	search_engines.push_back(shared_ptr<SearchEngine>(new YahooBossAPI));
-	search_engines.push_back(shared_ptr<SearchEngine>(new AOLWrapper));
+	shared_ptr<SearchEngine> yahoo(new YahooBossAPI);
+	shared_ptr<SearchEngine> aol(new AOLWrapper);
+	shared_ptr<SearchEngine> aolr(new SearchEngineRepeater(aol));
+	search_engines.push_back(yahoo);
+	search_engines.push_back(aol);
+	search_engines.push_back(aolr);
 	// Add more search engines here.
 	return true;
 }
@@ -97,9 +103,10 @@ SearchProxy::ReturnCode SearchProxy::search(string &search_id, string &query_tex
 		}
 
 		if (search.hasResults(start_pos, result_count)){
-			// already have the results
+			getLogger().debug(str(format("Already has results from %d to %d") % start_pos % (start_pos + result_count - 1)));
 			return OK;
 		}
+		start_pos = search.results.size() + 1;
 
 		// Use a temporary search instance.
 		Search temp_search;

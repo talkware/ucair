@@ -3,6 +3,7 @@
 #include <boost/algorithm/string.hpp>
 #include <boost/asio.hpp>
 #include "common_util.h"
+#include "logger.h"
 #include "url_components.h"
 
 using namespace std;
@@ -14,6 +15,7 @@ namespace util {
 const string DEFAULT_USER_AGENT = "Mozilla/5.0 (Windows; U; Windows NT 6.0; en-US; rv:1.9.0.10) Gecko/2009042316 Firefox/3.0.10 (.NET CLR 3.5.30729)";
 
 bool downloadPage(const string &url, string &content, string &err_msg, bool follow_redirect){
+	ucair::getLogger().info("Downloading " + url);
 	content.clear();
 	err_msg.clear();
 

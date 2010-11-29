@@ -12,8 +12,8 @@ public:
 
 	std::string getSearchEngineId() const { return "yahoo"; }
 	std::string getSearchEngineName() const { return "Yahoo!"; }
-	bool fetchResults(Search &search, int start_pos, int result_count);
-	int maxAllowedResultCount() const { return 100; }
+	bool fetchResults(Search &search, int &start_pos, int &result_count);
+	int maxAllowedResultCount() const { return 50; }
 
 	/*! \brief Builds a URL for a search page.
 	 *  \param query query

@@ -71,6 +71,11 @@ bool BasicSearchUI::initialize(){
 	shared_ptr<ResultListView> base_view(new ResultListView("base", "Base"));
 	getPageModuleManager().addPageModule(base_view);
 	addSearchView("base");
+
+	Main &main = Main::instance();
+	first_page_fetch_result_count = util::getParam<int>(main.getConfig(), "first_page_fetch_result_count");
+	next_pages_fetch_result_count = util::getParam<int>(main.getConfig(), "next_pages_fetch_result_count");
+
 	return true;
 }
 
@@ -157,7 +162,7 @@ void BasicSearchUI::displaySearchPage(Request &request, Reply &reply){
 	}
 
 	int result_count = 10;
-	int result_fetch_count = 50;
+	int result_fetch_count = start_pos == 1 ? first_page_fetch_result_count : next_pages_fetch_result_count;
 
 	string search_view_id = request.getFormData("view");
 	if (search_view_id.empty()){
