@@ -119,7 +119,17 @@ bool YahooBossAPI::parsePage(Search &search, const string &content) {
 	return true;
 }
 
-bool YahooBossAPI::fetchResults(Search &search, int start_pos, int result_count){
+bool YahooBossAPI::fetchResults(Search &search, int &start_pos, int &result_count){
+	int end_pos = start_pos + result_count - 1;
+	start_pos = start_pos / 10 * 10 + 1;
+	result_count = end_pos - start_pos + 1;
+	if (result_count > 100) {
+		result_count = 100;
+	}
+	else {
+		result_count = (result_count + 9) / 10 * 10;
+	}
+
 	string url = buildURL(search.query, start_pos, result_count);
 	string content, error;
 	if (! http::util::downloadPage(url, content, error)){

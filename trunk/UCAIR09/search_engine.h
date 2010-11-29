@@ -87,12 +87,14 @@ public:
 	virtual std::string getSearchEngineName() const = 0;
 
 	/*! \brief Retrieves results for a query.
+	 *
+	 *  The search engine reserves the right to modify the input start pos and result count to whatever value it deems appropriate.
 	 *  \param[in,out] search search instance that gives query and receives results
-	 *  \param[in] start_pos start pos of the first result
-	 *  \param[in] result_count number of results to retrieve
+	 *  \param[in,out] start_pos start pos of the first result
+	 *  \param[in,out] result_count number of results to retrieve
 	 *  \return true if succeeded
 	 */
-	virtual bool fetchResults(Search &search, int start_pos, int result_count) = 0;
+	virtual bool fetchResults(Search &search, int &start_pos, int &result_count) = 0;
 
 	/*! \brief Returns max number of results that can be returned at one time.
 	 *

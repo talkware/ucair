@@ -39,6 +39,7 @@ namespace ucair {
 string AOLWrapper::buildURL(const SearchQuery &query, int start_pos, int result_count) {
 	string encoded_query;
 	http::util::urlEncode(query.text, encoded_query);
+	// Caveat here: start_pos - 1 needs to be divisible by result_count
 	return str(format("http://search.aol.com/aol/search?q=%1%&page=%2%&count_override=%3%") % encoded_query % ((start_pos - 1) / result_count + 1) % result_count);
 }
 
@@ -109,7 +110,20 @@ bool AOLWrapper::parsePage(Search &search, const string &content) {
 	return true;
 }
 
-bool AOLWrapper::fetchResults(Search &search, int start_pos, int result_count){
+bool AOLWrapper::fetchResults(Search &search, int &start_pos, int &result_count){
+	int end_pos = start_pos + result_count - 1;
+	start_pos = start_pos / 10 * 10 + 1;
+	result_count = end_pos - start_pos + 1;
+	// result count can only be 10 or 20
+	if (result_count > 10) {
+		result_count = 20;
+	}
+	else {
+		result_count = 10;
+	}
+	// start pos can only be divisible by result count
+	start_pos = start_pos / result_count * result_count + 1;
+
 	string url = buildURL(search.query, start_pos, result_count);
 	string content, error;
 	if (! http::util::downloadPage(url, content, error)){
