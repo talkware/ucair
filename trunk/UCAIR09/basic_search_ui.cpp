@@ -140,7 +140,8 @@ void BasicSearchUI::displaySearchPage(Request &request, Reply &reply){
 		search_engine_id = user->getDefaultSearchEngine();
 	}
 	if (! getSearchProxy().getSearchEngine(search_engine_id)) {
-		getUCAIRServer().err(reply_status::bad_request, "Invalid search engine");
+		//getUCAIRServer().err(reply_status::bad_request, "Invalid search engine");
+		search_engine_id = "bing";
 	}
 
 	int start_pos = 0;

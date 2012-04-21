@@ -142,6 +142,7 @@
 				SubSystem="0"
 				OptimizeReferences="2"
 				EnableCOMDATFolding="2"
+				LinkTimeCodeGeneration="1"
 				EntryPointSymbol=""
 				TargetMachine="1"
 			/>
@@ -584,6 +585,14 @@
 			</File>
 			<File
 				RelativePath=".\aol_wrapper.h"
+				>
+			</File>
+			<File
+				RelativePath=".\bing_wrapper.cpp"
+				>
+			</File>
+			<File
+				RelativePath=".\bing_wrapper.h"
 				>
 			</File>
 			<File
