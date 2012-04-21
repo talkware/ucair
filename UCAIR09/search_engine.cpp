@@ -108,15 +108,13 @@ string ExternalSearchEngine::getSearchLink(const string &query) const {
 
 namespace external_search_engine{
 	ExternalSearchEngine google("google", "Google", "http://www.google.com", "http://www.google.com/search?q=");
-	ExternalSearchEngine yahoo("yahoo", "Yahoo!", "http://search.yahoo.com", "http://search.yahoo.com/search?p=");
 	ExternalSearchEngine bing("bing", "Bing", "http://www.bing.com", "http://www.bing.com/search?q=");
 }
 
 list<const ExternalSearchEngine*> getAllExternalSearchEngines() {
 	list<const ExternalSearchEngine*> l;
-	l.push_back(&external_search_engine::yahoo);
-	l.push_back(&external_search_engine::google);
 	l.push_back(&external_search_engine::bing);
+	l.push_back(&external_search_engine::google);
 	return l;
 }
 

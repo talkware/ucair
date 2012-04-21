@@ -6,6 +6,7 @@
 #include <boost/format.hpp>
 #include <boost/thread.hpp>
 #include "aol_wrapper.h"
+#include "bing_wrapper.h"
 #include "common_util.h"
 #include "config.h"
 #include "logger.h"
@@ -37,13 +38,17 @@ list<SearchEngine*> SearchProxy::getAllSearchEngines() const {
 }
 
 bool SearchProxy::initialize(){
-	shared_ptr<SearchEngine> yahoo(new YahooBossAPI);
-	shared_ptr<SearchEngine> aol(new AOLWrapper);
-	shared_ptr<SearchEngine> aolr(new SearchEngineRepeater(aol));
-	search_engines.push_back(yahoo);
-	search_engines.push_back(aol);
-	search_engines.push_back(aolr);
+	//shared_ptr<SearchEngine> yahoo(new YahooBossAPI);
+	//shared_ptr<SearchEngine> aol(new AOLWrapper);
+	//shared_ptr<SearchEngine> aolr(new SearchEngineRepeater(aol));
+	shared_ptr<SearchEngine> bing(new BingWrapper);
+	shared_ptr<SearchEngine> bingr(new SearchEngineRepeater(bing));
+	//search_engines.push_back(yahoo);
+	//search_engines.push_back(aol);
+	//search_engines.push_back(aolr);
 	// Add more search engines here.
+	search_engines.push_back(bing);
+	search_engines.push_back(bingr);
 	return true;
 }
 

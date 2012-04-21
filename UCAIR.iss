@@ -7,7 +7,7 @@
 ; (To generate a new GUID, click Tools | Generate GUID inside the IDE.)
 AppId={{66C2290F-EFE0-4232-A5A5-D850BCDD7006}
 AppName=UCAIR
-AppVerName=UCAIR Build 20100404
+AppVerName=UCAIR Build 20120420
 AppPublisher=UIUC Timan Group
 AppPublisherURL=http://code.google.com/p/ucair/
 AppSupportURL=http://code.google.com/p/ucair/
