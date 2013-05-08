@@ -17,7 +17,7 @@ Notes:
   # Source can be downloaded [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-src-2013-05-08.zip&can=2&q= here]
 
 = What's included in this release =
-  * Bing Search API integration (you may need to generate your own Bing account key)
+  * [https://datamarket.azure.com/dataset/5BA839F1-12CE-4CCE-BF57-A49D98D29A44 Bing Search API] integration (you may need to generate your own Bing account key)
   * Single-query click-based implicit feedback
 
 = What's not included in this release =
