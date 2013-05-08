@@ -1,0 +1,17 @@
+#New UCAIR Java Implementation
+
+= Running =
+
+  * Make sure you have [http://java.com/en/download/index.jsp Java 7]
+  * Make sure "java" is on your system path. [http://java.com/en/download/help/path.xml How do I set or change the PATH system variable?]
+  * Download [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-bin-2013-05-08.zip&can=2&q= ucair-java-bin-2013-05-08.zip] and unpack.
+  * Run start.bat
+  * Point your browser to [http://localhost:10816]
+
+
+= Details =
+
+Add your content here.  Format your content with:
+  * Text in *bold* or _italic_
+  * Headings, paragraphs, and lists
+  * Automatic links to other wiki pages
