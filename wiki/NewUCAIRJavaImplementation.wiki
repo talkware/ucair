@@ -1,17 +1,27 @@
 #New UCAIR Java Implementation
 
+This is a complete rewrite of the original UCAIR C++ implementation in Java that leverages mature technologies including JSP/JSTL and Spring IOC/MVC. It has a more modern modular architecture and offers a cleaner starting place for adding new personalized search features.
+
 = Running =
 
-  * Make sure you have [http://java.com/en/download/index.jsp Java 7]
-  * Make sure the "java" command is on your system path. [http://java.com/en/download/help/path.xml How do I set or change the PATH system variable?]
-  * Download [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-bin-2013-05-08.zip&can=2&q= ucair-java-bin-2013-05-08.zip] and unpack.
-  * Run start.bat
-  * Point your browser to [http://localhost:10816]
+Steps:
+  # Make sure you have [http://java.com/en/download/index.jsp Java 7]
+  # Make sure the "java" command is on your system path. [http://java.com/en/download/help/path.xml How do I set or change the PATH system variable?]
+  # Download [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-bin-2013-05-08.zip&can=2&q= ucair-java-bin-2013-05-08.zip] and unpack.
+  # Run start.bat
+  # Point your browser to [http://localhost:10816]
 
+Notes:
+  # The first few page loads may be slow due to one-time JSP compilation cost
+  # In IE, you may need to [http://windows.microsoft.com/en-us/internet-explorer/use-compatibility-view#ie=ie-10 enable compatibility mode] if you see broken layout. Firefox and Chrome run fine.
+  # Source can be downloaded [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-src-2013-05-08.zip&can=2&q= here]
 
-= Details =
+= What's included in this release =
+  * Bing Search API integration (you may need to generate your own Bing account key)
+  * Single-query click-based implicit feedback
 
-Add your content here.  Format your content with:
-  * Text in *bold* or _italic_
-  * Headings, paragraphs, and lists
-  * Automatic links to other wiki pages
+= What's not included in this release =
+  * Session-scope implicit feedback
+  * Long-term implicit feedback
+  * Persisting search log to database
+  * Search keyword match highlighting
