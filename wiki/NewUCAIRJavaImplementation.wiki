@@ -25,3 +25,4 @@ Notes:
   * Long-term implicit feedback
   * Persisting search log to database
   * Search keyword match highlighting
+  * Windows installer
