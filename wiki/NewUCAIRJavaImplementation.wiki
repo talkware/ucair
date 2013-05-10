@@ -14,7 +14,7 @@ Steps:
 Notes:
   # The first few page loads may be slow due to one-time JSP compilation cost
   # In IE, you may need to [http://windows.microsoft.com/en-us/internet-explorer/use-compatibility-view#ie=ie-10 enable compatibility mode] if you see broken layout. Firefox and Chrome run fine.
-  # Source can be downloaded [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-src-2013-05-08.zip&can=2&q= here]
+  # Source can be downloaded [http://code.google.com/p/ucair/downloads/detail?name=ucair-java-src-2013-05-08.zip&can=2&q= here] or visited on [https://github.com/talkware/UCAIR/tree/master/UCAIR github]
 
 = What's included in this release =
   * [https://datamarket.azure.com/dataset/5BA839F1-12CE-4CCE-BF57-A49D98D29A44 Bing Search API] integration (you may need to generate your own Bing account key)
